@@ -3,72 +3,70 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>رزومه ساز حرفه‌ای - طرح دانیال</title>
+<title>رزومه ساز دانیال (نسخه اصلاح شده)</title>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
 <style>
     :root {
-        --primary: #0056b3; /* آبی پررنگ */
+        --primary: #004a99; /* آبی سرمه‌ای */
         --secondary: #00aaff; /* آبی روشن */
-        --text-main: #333;
-        --text-light: #666;
-        --bg-gray: #f4f4f4;
+        --sidebar-bg: #f8fafc;
+        --border-color: #e2e8f0;
     }
 
     * { box-sizing: border-box; outline: none; }
     body { 
         margin: 0; padding: 0; 
         font-family: 'Vazir', sans-serif; 
-        background-color: #1e293b; 
+        background-color: #333; 
         height: 100vh; 
         display: flex; 
         overflow: hidden;
     }
 
-    /* --- پنل تنظیمات (سمت راست) --- */
+    /* --- پنل تنظیمات (سمت راست صفحه نمایش) --- */
     .editor-sidebar {
-        width: 380px;
-        background: #0f172a;
+        width: 400px;
+        background: #1e293b;
         color: white;
-        padding: 20px;
+        padding: 15px;
         overflow-y: auto;
-        border-left: 2px solid var(--secondary);
+        border-left: 3px solid var(--secondary);
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
         z-index: 100;
+        box-shadow: -5px 0 15px rgba(0,0,0,0.3);
     }
 
-    .editor-section {
+    .group-box {
         background: rgba(255,255,255,0.05);
-        padding: 15px;
-        border-radius: 10px;
+        padding: 12px;
+        border-radius: 8px;
         border: 1px solid rgba(255,255,255,0.1);
     }
-    
-    .editor-section h3 { margin: 0 0 10px 0; color: var(--secondary); font-size: 14px; border-bottom: 1px dashed #444; padding-bottom: 5px; }
-    
-    .inp-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-    input, textarea, select {
+    .group-box h4 { margin: 0 0 10px 0; color: var(--secondary); font-size: 14px; border-bottom: 1px dashed #555; padding-bottom: 5px; }
+
+    input, textarea {
         background: #334155; border: 1px solid #475569; color: white;
-        padding: 8px; border-radius: 5px; font-family: 'Vazir'; font-size: 13px; width: 100%;
+        padding: 8px; border-radius: 4px; font-family: 'Vazir'; font-size: 13px; width: 100%; margin-bottom: 5px;
     }
-    input:focus, textarea:focus { border-color: var(--secondary); }
+    input:focus, textarea:focus { border-color: var(--secondary); background: #475569; }
+
+    .btn {
+        width: 100%; padding: 8px; border: none; border-radius: 4px; cursor: pointer;
+        font-family: 'Vazir'; font-size: 13px; margin-top: 5px; color: white; transition: 0.2s;
+    }
+    .btn-green { background: #22c55e; }
+    .btn-red { background: #ef4444; width: auto; font-size: 11px; padding: 4px 8px; float: left; }
+    .btn-blue { background: var(--secondary); font-weight: bold; font-size: 15px; margin-bottom: 10px; }
+    .btn-orange { background: #f59e0b; }
+    .btn-purple { background: #6366f1; }
     
-    .btn-row { display: flex; gap: 5px; }
-    button {
-        padding: 8px; border: none; border-radius: 5px; cursor: pointer;
-        font-family: 'Vazir'; font-size: 12px; transition: 0.2s;
-    }
-    .btn-add { background: #22c55e; color: white; width: 100%; }
-    .btn-del { background: #ef4444; color: white; }
-    .btn-action { flex: 1; font-weight: bold; font-size: 13px; }
-    .btn-save { background: #f59e0b; color: white; }
-    .btn-load { background: #6366f1; color: white; }
-    .btn-print { background: var(--secondary); color: white; font-size: 16px; margin-bottom: 10px; }
+    .row-btns { display: flex; gap: 5px; }
 
     /* --- محیط پیش‌نمایش (سمت چپ) --- */
-    .preview-container {
+    .preview-area {
         flex: 1;
         background: #525659;
         overflow-y: auto;
@@ -82,39 +80,36 @@
     /* --- کاغذ A4 --- */
     .a4-page {
         width: 210mm;
-        min-height: 297mm; /* ارتفاع دقیق A4 */
+        height: 297mm; /* ارتفاع ثابت A4 */
         background: white;
         position: relative;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        overflow: hidden;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        overflow: hidden; /* مخفی کردن سرریز */
         display: flex;
         flex-direction: column;
-    }
-
-    /* --- طراحی رزومه (طرح دانیال) --- */
-    /* هدر */
-    .res-header {
-        position: relative;
-        height: 160px;
-        background: white;
         margin-bottom: 20px;
     }
-    /* موج آبی */
-    .wave-bg {
+
+    /* --- لی‌آوت رزومه (طرح دانیال) --- */
+    /* هدر آبی */
+    .header-top {
+        height: 150px;
+        position: relative;
+        width: 100%;
+    }
+    .wave-shape {
         position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 100%;
-        background: var(--secondary);
-        clip-path: polygon(0 0, 100% 0, 100% 65%, 0% 100%);
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: var(--primary);
+        clip-path: polygon(0 0, 100% 0, 100% 75%, 0% 100%);
         z-index: 1;
     }
-    .wave-bg-dark {
+    .wave-shape-light {
         position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 80%;
-        background: var(--primary);
-        clip-path: polygon(0 0, 100% 0, 100% 60%, 0% 100%);
-        z-index: 2;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: var(--secondary);
+        clip-path: polygon(0 0, 100% 0, 100% 65%, 0% 100%);
+        z-index: 0;
     }
 
     .header-content {
@@ -124,100 +119,110 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
+        height: 100%;
     }
-
-    .profile-info h1 { margin: 0; color: white; font-size: 32px; font-weight: bold; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-    .profile-info p { margin: 5px 0 0 0; color: rgba(255,255,255,0.9); font-size: 16px; font-weight: 300; }
     
-    .info-bar {
-        display: flex; gap: 15px; margin-top: 15px; font-size: 11px; color: rgba(255,255,255,0.8);
-    }
+    .header-text { width: 60%; color: white; padding-top: 10px; }
+    .header-text h1 { margin: 0; font-size: 30px; font-weight: bold; }
+    .header-text p { margin: 5px 0 0 0; font-size: 16px; opacity: 0.9; }
 
-    .profile-img-container {
+    /* عکس پروفایل */
+    .photo-box {
         width: 130px; height: 130px;
         border-radius: 50%;
         border: 5px solid white;
         overflow: hidden;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         background: white;
-        margin-top: 5px;
+        position: absolute;
+        left: 40px;
+        top: 30px;
+        z-index: 20;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
-    .profile-img { width: 100%; height: 100%; object-fit: cover; }
+    .photo-box img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* بدنه اصلی */
-    .res-body {
+    /* بدنه دو ستونه */
+    .main-body {
         display: flex;
         flex: 1;
-        padding: 0 0 20px 0;
+        position: relative;
     }
 
-    /* ستون چپ (سایدبار رزومه) */
-    .col-left {
+    /* ستون راست (اطلاعات تماس و مهارت) - در HTML اول میاید */
+    .col-sidebar {
         width: 35%;
-        padding: 0 20px 0 30px;
-        border-left: 1px solid #eee;
+        background: var(--sidebar-bg);
+        border-left: 1px solid var(--border-color); /* خط جداکننده */
+        padding: 70px 20px 20px 20px; /* پدینگ بالا برای رد شدن از عکس */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
-    /* ستون راست (بدنه اصلی) */
-    .col-right {
+    /* ستون چپ (سوابق) */
+    .col-content {
         width: 65%;
-        padding: 0 30px 0 20px;
+        padding: 30px 30px 30px 20px;
     }
 
-    /* تیتر بخش‌ها */
-    .section-title {
-        font-size: 16px;
+    /* اگر صفحه دوم باشد، پدینگ سایدبار کم میشود */
+    .a4-page.page-next .header-top { display: none; }
+    .a4-page.page-next .col-sidebar { padding-top: 30px; }
+    .a4-page.page-next .col-content { padding-top: 40px; }
+    .a4-page.page-next .photo-box { display: none; }
+
+    /* استایل المان‌ها */
+    .sec-title {
+        width: 100%;
+        color: #333;
         font-weight: bold;
-        color: var(--text-main);
+        font-size: 15px;
         border-bottom: 2px solid var(--secondary);
         padding-bottom: 5px;
-        margin-top: 25px;
         margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        display: flex; align-items: center; gap: 8px;
     }
-    .section-title i { color: var(--secondary); font-size: 18px; }
+    .sec-title i { color: var(--secondary); font-size: 18px; }
 
     /* تماس */
-    .contact-item {
-        display: flex; justify-content: flex-end; align-items: center; gap: 10px;
-        font-size: 12px; color: #444; margin-bottom: 10px;
-        text-align: left;
+    .contact-row {
+        width: 100%; display: flex; align-items: center; justify-content: flex-end; gap: 10px;
+        margin-bottom: 10px; font-size: 12px; color: #444; text-align: left;
     }
-    .contact-icon { width: 24px; height: 24px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: var(--text-main); font-size: 12px; }
+    .contact-row span { text-align: left; }
+    .contact-row i { color: #555; width: 20px; text-align: center; }
 
-    /* مهارت‌ها */
-    .skill-item { margin-bottom: 12px; }
-    .skill-head { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; margin-bottom: 4px; }
-    .progress-bar { width: 100%; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
-    .progress-fill { height: 100%; background: var(--secondary); border-radius: 3px; }
+    /* مهارت */
+    .skill-row { width: 100%; margin-bottom: 12px; }
+    .skill-txt { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px; font-weight: bold; }
+    .skill-bar { width: 100%; height: 6px; background: #ddd; border-radius: 3px; overflow: hidden; }
+    .skill-fill { height: 100%; background: var(--secondary); }
 
-    /* آیتم‌های زمانی (شغل/تحصیل) */
-    .timeline-item {
+    /* سوابق */
+    .job-item {
         position: relative;
         padding-right: 20px;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         border-right: 2px solid #eee;
     }
-    .timeline-item::before {
+    .job-item::before {
         content: ''; position: absolute; right: -6px; top: 5px;
-        width: 10px; height: 10px; background: var(--secondary); border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 1px var(--secondary);
+        width: 10px; height: 10px; background: var(--secondary);
+        border-radius: 50%;
     }
-    .tl-title { font-weight: bold; font-size: 14px; color: #000; }
-    .tl-sub { font-size: 12px; color: var(--secondary); margin: 2px 0; font-weight: bold; }
-    .tl-date { font-size: 11px; color: #888; margin-bottom: 5px; display: block; }
-    .tl-desc { font-size: 12px; color: #555; line-height: 1.6; text-align: justify; white-space: pre-wrap; }
+    .job-title { font-weight: bold; font-size: 14px; color: #000; }
+    .job-sub { font-size: 12px; color: var(--primary); margin: 2px 0; }
+    .job-date { font-size: 11px; color: #777; display: block; margin-bottom: 5px; }
+    .job-desc { font-size: 12px; color: #444; text-align: justify; line-height: 1.6; }
 
-    /* متن ساده */
-    .text-block { font-size: 13px; line-height: 1.8; text-align: justify; color: #444; }
+    .about-txt { font-size: 13px; text-align: justify; line-height: 1.8; color: #444; margin-bottom: 20px; }
 
-    /* حالت پرینت */
+    /* --- پرینت --- */
     @media print {
         body { background: white; height: auto; display: block; overflow: visible; }
         .editor-sidebar { display: none; }
-        .preview-container { padding: 0; background: white; display: block; }
-        .a4-page { margin: 0; box-shadow: none; page-break-after: always; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        .preview-area { padding: 0; background: white; display: block; }
+        .a4-page { margin: 0; box-shadow: none; page-break-after: always; }
         .a4-page:last-child { page-break-after: auto; }
     }
 </style>
@@ -225,388 +230,297 @@
 <body>
 
 <div class="editor-sidebar">
-    <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> چاپ / خروجی PDF</button>
-    
-    <div class="btn-row">
-        <button class="btn-action btn-save" onclick="saveProject()"><i class="fas fa-save"></i> ذخیره پروژه (.sedat)</button>
-        <button class="btn-action btn-load" onclick="document.getElementById('loadInput').click()"><i class="fas fa-folder-open"></i> بازکردن پروژه</button>
-        <input type="file" id="loadInput" accept=".sedat" style="display:none" onchange="loadProject(this)">
+    <button class="btn btn-blue" onclick="window.print()"><i class="fas fa-print"></i> دانلود PDF / چاپ</button>
+    <div class="row-btns">
+        <button class="btn btn-orange" onclick="saveData()"><i class="fas fa-save"></i> ذخیره پروژه (.sedat)</button>
+        <button class="btn btn-purple" onclick="document.getElementById('loadIn').click()"><i class="fas fa-folder-open"></i> بازکردن</button>
+        <input type="file" id="loadIn" style="display:none" onchange="loadData(this)" accept=".sedat">
     </div>
 
-    <div class="editor-section">
-        <h3>اطلاعات فردی</h3>
-        <input placeholder="نام و نام خانوادگی" id="in_name" oninput="updateData('name', this.value)">
-        <input placeholder="عنوان شغلی" id="in_job" oninput="updateData('job', this.value)">
-        <div style="display:flex; gap:5px; margin-top:5px;">
-             <button onclick="document.getElementById('photoInput').click()" style="width:100%; background:#475569; color:white;">انتخاب عکس</button>
-             <input type="file" id="photoInput" style="display:none" accept="image/*" onchange="updatePhoto(this)">
-             <button onclick="removePhoto()" style="background:#ef4444; color:white;">X</button>
-        </div>
-        <textarea rows="4" placeholder="درباره من..." style="margin-top:8px" oninput="updateData('about', this.value)" id="in_about"></textarea>
+    <div class="group-box">
+        <h4>اطلاعات پایه</h4>
+        <input placeholder="نام و نام خانوادگی" id="in_name" oninput="update('name', this.value)">
+        <input placeholder="عنوان شغلی" id="in_job" oninput="update('job', this.value)">
+        <textarea rows="4" placeholder="درباره من" id="in_about" oninput="update('about', this.value)"></textarea>
+        <button class="btn" style="background:#475569" onclick="document.getElementById('imgIn').click()">انتخاب عکس</button>
+        <input type="file" id="imgIn" style="display:none" onchange="updateImg(this)">
     </div>
 
-    <div class="editor-section">
-        <h3>اطلاعات تماس</h3>
-        <input placeholder="شماره موبایل" id="in_phone" oninput="updateData('phone', this.value)">
-        <input placeholder="ایمیل" id="in_email" oninput="updateData('email', this.value)">
-        <input placeholder="آدرس / شهر" id="in_addr" oninput="updateData('addr', this.value)">
-        <input placeholder="لینکدین / وبسایت" id="in_web" oninput="updateData('web', this.value)">
+    <div class="group-box">
+        <h4>تماس (ستون راست)</h4>
+        <input placeholder="موبایل" id="in_phone" oninput="update('phone', this.value)">
+        <input placeholder="ایمیل" id="in_email" oninput="update('email', this.value)">
+        <input placeholder="آدرس" id="in_addr" oninput="update('addr', this.value)">
     </div>
 
-    <div class="editor-section">
-        <h3>سوابق شغلی <button class="btn-add" style="width:auto; float:left; padding:2px 8px;" onclick="addItem('works')">+</button></h3>
-        <div id="editor_works"></div>
+    <div class="group-box">
+        <h4>سوابق شغلی <button class="btn btn-green" style="width:auto; float:left; padding:2px 6px;" onclick="addItem('works')">+</button></h4>
+        <div id="list_works"></div>
     </div>
 
-    <div class="editor-section">
-        <h3>سوابق تحصیلی <button class="btn-add" style="width:auto; float:left; padding:2px 8px;" onclick="addItem('education')">+</button></h3>
-        <div id="editor_education"></div>
+    <div class="group-box">
+        <h4>تحصیلات <button class="btn btn-green" style="width:auto; float:left; padding:2px 6px;" onclick="addItem('edus')">+</button></h4>
+        <div id="list_edus"></div>
     </div>
 
-    <div class="editor-section">
-        <h3>مهارت‌ها <button class="btn-add" style="width:auto; float:left; padding:2px 8px;" onclick="addItem('skills')">+</button></h3>
-        <div id="editor_skills"></div>
+    <div class="group-box">
+        <h4>مهارت‌ها <button class="btn btn-green" style="width:auto; float:left; padding:2px 6px;" onclick="addItem('skills')">+</button></h4>
+        <div id="list_skills"></div>
     </div>
 </div>
 
-<div class="preview-container" id="previewArea">
-    </div>
+<div class="preview-area" id="renderZone"></div>
 
 <script>
     // --- داده‌های اولیه ---
-    let resumeData = {
+    let data = {
         name: "دانیال یوسفی",
         job: "مهندس نرم‌افزار",
-        about: "مهندس نرم‌افزار با بیش از ۶ سال تجربه در توسعه نرم‌افزارهای مقیاس‌پذیر و کاربرمحور. مسلط به زبان‌های برنامه‌نویسی JavaScript و Python. متخصص در فریم‌ورک‌های مدرن مانند React و Django. مشتاق به همکاری در پروژه‌های چالش‌برانگیز.",
-        phone: "09121234567",
-        email: "info@resume-fa.ir",
-        addr: "تهران - تجریش",
-        web: "linkedin.com/in/danial",
+        about: "برنامه‌نویس با تجربه و مسلط به تکنولوژی‌های روز. علاقه‌مند به حل مسائل پیچیده و کار تیمی.",
+        phone: "09123456789",
+        email: "email@example.com",
+        addr: "تهران، ایران",
         photo: "",
         works: [
-            { id: 1, title: "مهندس نرم‌افزار ارشد", sub: "شرکت فناوری نوین", date: "1398 - اکنون", desc: "طراحی و توسعه پلتفرم وب با React که زمان بارگذاری صفحات را ۳۰٪ کاهش داد. پیاده‌سازی APIهای RESTful." },
-            { id: 2, title: "توسعه‌دهنده وب", sub: "استارتاپ خلاق", date: "1395 - 1398", desc: "توسعه اپلیکیشن‌های تحت وب با استفاده از HTML, CSS و JavaScript. همکاری نزدیک با تیم طراحی." }
+            { id: 1, title: "برنامه‌نویس ارشد", sub: "شرکت تکنولوژی برتر", date: "1400 - اکنون", desc: "مدیریت تیم فنی و توسعه پلتفرم‌های مقیاس‌پذیر." }
         ],
-        education: [
-            { id: 1, title: "کارشناسی ارشد علوم کامپیوتر", sub: "دانشگاه صنعتی شریف", date: "1396 - 1398", desc: "معدل: 18.5" },
-            { id: 2, title: "کارشناسی مهندسی نرم‌افزار", sub: "دانشگاه تهران", date: "1392 - 1396", desc: "معدل: 17.25" }
+        edus: [
+            { id: 1, title: "کارشناسی نرم‌افزار", sub: "دانشگاه تهران", date: "1395 - 1399", desc: "معدل 18" }
         ],
         skills: [
-            { id: 1, title: "JavaScript / React", val: 90 },
-            { id: 2, title: "Python / Django", val: 85 },
-            { id: 3, title: "Git / Docker", val: 75 },
-            { id: 4, title: "RESTful API", val: 80 }
+            { id: 1, title: "JavaScript", val: 90 },
+            { id: 2, title: "React", val: 85 }
         ]
     };
 
-    // --- توابع مدیریت داده ---
-    function updateData(key, val) {
-        resumeData[key] = val;
-        renderResume();
-    }
-
-    function updatePhoto(input) {
-        if(input.files && input.files[0]){
-            const reader = new FileReader();
-            reader.onload = e => {
-                resumeData.photo = e.target.result;
-                renderResume();
-            };
-            reader.readAsDataURL(input.files[0]);
+    // --- توابع آپدیت ---
+    function update(key, val) { data[key] = val; render(); }
+    
+    function updateImg(input) {
+        if(input.files && input.files[0]) {
+            let r = new FileReader();
+            r.onload = e => { data.photo = e.target.result; render(); }
+            r.readAsDataURL(input.files[0]);
         }
     }
-    function removePhoto() { resumeData.photo = ""; document.getElementById('photoInput').value = ""; renderResume(); }
 
-    function addItem(listName) {
-        const newItem = listName === 'skills' 
-            ? { id: Date.now(), title: "مهارت جدید", val: 50 }
+    function addItem(type) {
+        let newItem = type === 'skills' 
+            ? { id: Date.now(), title: "مهارت جدید", val: 50 } 
             : { id: Date.now(), title: "عنوان", sub: "زیرعنوان", date: "تاریخ", desc: "توضیحات" };
-        resumeData[listName].push(newItem);
-        renderEditors();
-        renderResume();
+        data[type].push(newItem);
+        renderInputs(); render();
     }
 
-    function updateItem(listName, id, key, val) {
-        const item = resumeData[listName].find(x => x.id == id);
-        if(item) { item[key] = val; renderResume(); }
+    function delItem(type, id) {
+        data[type] = data[type].filter(x => x.id != id);
+        renderInputs(); render();
     }
 
-    function deleteItem(listName, id) {
-        resumeData[listName] = resumeData[listName].filter(x => x.id != id);
-        renderEditors();
-        renderResume();
+    function updateList(type, id, key, val) {
+        let item = data[type].find(x => x.id == id);
+        if(item) { item[key] = val; render(); }
     }
 
-    // --- رندر کردن ادیتورها ---
-    function renderEditors() {
-        // تابع کمکی برای ساخت ادیتور لیست‌ها
-        const renderList = (listName, containerId, isSkill) => {
-            const container = document.getElementById(containerId);
-            container.innerHTML = "";
-            resumeData[listName].forEach(item => {
-                const div = document.createElement('div');
-                div.className = "inp-group";
-                div.style.borderBottom = "1px solid #444";
-                div.style.paddingBottom = "10px";
-                
+    // --- رندر کردن پنل ادمین ---
+    function renderInputs() {
+        // پر کردن فیلدهای ثابت
+        document.getElementById('in_name').value = data.name || "";
+        document.getElementById('in_job').value = data.job || "";
+        document.getElementById('in_about').value = data.about || "";
+        document.getElementById('in_phone').value = data.phone || "";
+        document.getElementById('in_email').value = data.email || "";
+        document.getElementById('in_addr').value = data.addr || "";
+
+        // ساخت لیست‌ها
+        const makeList = (type, containerId, isSkill) => {
+            let html = "";
+            data[type].forEach(item => {
                 if(isSkill) {
-                    div.innerHTML = `
-                        <div style="display:flex; gap:5px">
-                            <input value="${item.title}" oninput="updateItem('${listName}', ${item.id}, 'title', this.value)" placeholder="نام مهارت">
-                            <input type="number" min="0" max="100" value="${item.val}" style="width:60px" oninput="updateItem('${listName}', ${item.id}, 'val', this.value)">
-                        </div>
-                        <button class="btn-del" onclick="deleteItem('${listName}', ${item.id})">حذف</button>
-                    `;
+                    html += `
+                        <div style="border-bottom:1px solid #444; padding-bottom:5px; margin-bottom:5px;">
+                            <input value="${item.title}" oninput="updateList('${type}', ${item.id}, 'title', this.value)" placeholder="نام" style="width:60%; display:inline-block">
+                            <input value="${item.val}" type="number" oninput="updateList('${type}', ${item.id}, 'val', this.value)" style="width:20%; display:inline-block">
+                            <button class="btn-red" onclick="delItem('${type}', ${item.id})">X</button>
+                        </div>`;
                 } else {
-                    div.innerHTML = `
-                        <input value="${item.title}" oninput="updateItem('${listName}', ${item.id}, 'title', this.value)" placeholder="عنوان">
-                        <div style="display:flex; gap:5px">
-                            <input value="${item.sub}" oninput="updateItem('${listName}', ${item.id}, 'sub', this.value)" placeholder="زیرعنوان">
-                            <input value="${item.date}" oninput="updateItem('${listName}', ${item.id}, 'date', this.value)" placeholder="تاریخ">
-                        </div>
-                        <textarea rows="2" oninput="updateItem('${listName}', ${item.id}, 'desc', this.value)" placeholder="توضیحات">${item.desc}</textarea>
-                        <button class="btn-del" onclick="deleteItem('${listName}', ${item.id})">حذف</button>
-                    `;
+                    html += `
+                        <div style="border-bottom:1px solid #444; padding-bottom:5px; margin-bottom:5px;">
+                            <input value="${item.title}" oninput="updateList('${type}', ${item.id}, 'title', this.value)" placeholder="عنوان">
+                            <input value="${item.sub}" oninput="updateList('${type}', ${item.id}, 'sub', this.value)" placeholder="زیرعنوان">
+                            <input value="${item.date}" oninput="updateList('${type}', ${item.id}, 'date', this.value)" placeholder="تاریخ">
+                            <textarea oninput="updateList('${type}', ${item.id}, 'desc', this.value)" placeholder="توضیحات">${item.desc}</textarea>
+                            <button class="btn-red" onclick="delItem('${type}', ${item.id})">حذف آیتم</button>
+                        </div>`;
                 }
-                container.appendChild(div);
             });
+            document.getElementById(containerId).innerHTML = html;
         };
 
-        renderList('works', 'editor_works', false);
-        renderList('education', 'editor_education', false);
-        renderList('skills', 'editor_skills', true);
-        
-        // پر کردن فیلدهای ثابت
-        ['name','job','about','phone','email','addr','web'].forEach(id => {
-            document.getElementById('in_' + id).value = resumeData[id] || "";
-        });
+        makeList('works', 'list_works', false);
+        makeList('edus', 'list_edus', false);
+        makeList('skills', 'list_skills', true);
     }
 
-    // --- رندر اصلی رزومه (هوشمند) ---
-    function renderResume() {
-        const container = document.getElementById('previewArea');
-        container.innerHTML = "";
+    // --- رندر اصلی رزومه (موتور صفحه‌بندی) ---
+    function render() {
+        const zone = document.getElementById('renderZone');
+        zone.innerHTML = "";
 
-        // صف محتوا (Content Queue)
-        // ما محتوا را به دو دسته چپ و راست تقسیم می‌کنیم
-        // و آیتم به آیتم اضافه می‌کنیم، اگر جا نشد، صفحه جدید می‌سازیم
+        // ساخت صفحه خام
+        const createPage = (pageNum) => {
+            let div = document.createElement('div');
+            div.className = pageNum === 0 ? 'a4-page' : 'a4-page page-next';
+            div.innerHTML = `
+                <div class="header-top">
+                    <div class="wave-shape-light"></div>
+                    <div class="wave-shape"></div>
+                    <div class="header-content">
+                        <div class="header-text">
+                            <h1>${data.name}</h1>
+                            <p>${data.job}</p>
+                        </div>
+                    </div>
+                </div>
+                ${pageNum === 0 && data.photo ? `<div class="photo-box"><img src="${data.photo}"></div>` : ''}
+                <div class="main-body">
+                    <div class="col-sidebar" id="sidebar-${pageNum}"></div>
+                    <div class="col-content" id="content-${pageNum}"></div>
+                </div>
+            `;
+            return div;
+        };
 
         let pages = [];
-        let currentPageIdx = 0;
-        
-        // تابع ساخت صفحه جدید
-        const createPage = (pageNum) => {
-            const p = document.createElement('div');
-            p.className = 'a4-page';
-            // هدر فقط در صفحه اول
-            if(pageNum === 0) {
-                p.innerHTML = `
-                    <div class="res-header">
-                        <div class="wave-bg"></div>
-                        <div class="wave-bg-dark"></div>
-                        <div class="header-content">
-                            <div class="profile-info">
-                                <h1>${resumeData.name}</h1>
-                                <p>${resumeData.job}</p>
-                                <div class="info-bar">
-                                    <span>${resumeData.addr ? '<i class="fas fa-map-marker-alt"></i> '+resumeData.addr : ''}</span>
-                                    <span>${resumeData.web ? '<i class="fas fa-globe"></i> '+resumeData.web : ''}</span>
-                                </div>
-                            </div>
-                            ${resumeData.photo ? `<div class="profile-img-container"><img src="${resumeData.photo}" class="profile-img"></div>` : ''}
-                        </div>
-                    </div>
-                    <div class="res-body">
-                        <div class="col-right"></div>
-                        <div class="col-left"></div>
-                    </div>
-                `;
-            } else {
-                // صفحات بعدی بدون هدر گرافیکی
-                p.innerHTML = `
-                    <div style="height:30px"></div>
-                    <div class="res-body">
-                        <div class="col-right"></div>
-                        <div class="col-left"></div>
-                    </div>
-                `;
-            }
-            container.appendChild(p);
-            return p;
-        };
-
-        // ایجاد صفحه اول
+        let curPage = 0;
         pages.push(createPage(0));
+        zone.appendChild(pages[0]);
 
-        // --- پر کردن ستون راست (اصلی) ---
-        // لیست بلاک‌هایی که باید در راست باشند
-        let rightBlocks = [];
-        if(resumeData.about) rightBlocks.push({type:'text', title:'درباره من', content: resumeData.about, icon:'fa-user'});
-        if(resumeData.works.length) rightBlocks.push({type:'list', title:'سوابق شغلی', items: resumeData.works, icon:'fa-briefcase'});
-        if(resumeData.education.length) rightBlocks.push({type:'list', title:'سوابق تحصیلی', items: resumeData.education, icon:'fa-graduation-cap'});
+        // 1. پر کردن سایدبار (راست)
+        // نکته مهم: در نسخه قبلی باگ داشت. الان چک میکنیم اگر جا نشد بره صفحه بعد
+        // اما معمولا سایدبار تماس و مهارت در یک صفحه جا میشه. برای سادگی و رفع باگ، همه رو اول میریزیم تو صفحه 1
+        // اگر خیلی زیاد بود، سیستم اسکرول میخوره ولی محتوا غیب نمیشه.
+        const sidebar = pages[0].querySelector(`#sidebar-0`);
+        
+        // تماس
+        let contactHtml = `<div class="sec-title"><i class="fas fa-address-book"></i> اطلاعات تماس</div>`;
+        if(data.phone) contactHtml += `<div class="contact-row"><span>${data.phone}</span> <i class="fas fa-mobile"></i></div>`;
+        if(data.email) contactHtml += `<div class="contact-row"><span>${data.email}</span> <i class="fas fa-envelope"></i></div>`;
+        if(data.addr) contactHtml += `<div class="contact-row"><span>${data.addr}</span> <i class="fas fa-map-marker-alt"></i></div>`;
+        
+        let cDiv = document.createElement('div');
+        cDiv.style.width = '100%';
+        cDiv.innerHTML = contactHtml + '<br>';
+        sidebar.appendChild(cDiv);
 
-        let pageIdx = 0;
-        let rightCol = pages[0].querySelector('.col-right');
+        // مهارت‌ها
+        if(data.skills.length > 0) {
+            let sDiv = document.createElement('div');
+            sDiv.style.width = '100%';
+            let sHtml = `<div class="sec-title"><i class="fas fa-lightbulb"></i> مهارت‌ها</div>`;
+            data.skills.forEach(s => {
+                sHtml += `
+                    <div class="skill-row">
+                        <div class="skill-txt"><span>${s.title}</span><span>${s.val}%</span></div>
+                        <div class="skill-bar"><div class="skill-fill" style="width:${s.val}%"></div></div>
+                    </div>`;
+            });
+            sDiv.innerHTML = sHtml;
+            sidebar.appendChild(sDiv);
+        }
 
-        rightBlocks.forEach(block => {
-            // اضافه کردن تیتر
-            const titleDiv = document.createElement('div');
-            titleDiv.className = 'section-title';
-            titleDiv.innerHTML = `<i class="fas ${block.icon}"></i> ${block.title}`;
-            rightCol.appendChild(titleDiv);
+        // 2. پر کردن محتوا (چپ) - با قابلیت صفحه بندی
+        let contentCol = pages[0].querySelector(`#content-0`);
+        let blocks = [];
+        
+        if(data.about) blocks.push({type:'txt', title:'درباره من', txt: data.about, icon:'fa-user'});
+        if(data.works.length) blocks.push({type:'list', title:'سوابق شغلی', items: data.works, icon:'fa-briefcase'});
+        if(data.edus.length) blocks.push({type:'list', title:'سوابق تحصیلی', items: data.edus, icon:'fa-graduation-cap'});
 
-            // چک کردن سرریز تیتر
-            if(checkOverflow(pages[pageIdx])) {
-                rightCol.removeChild(titleDiv);
-                pageIdx++;
-                if(!pages[pageIdx]) pages.push(createPage(pageIdx));
-                rightCol = pages[pageIdx].querySelector('.col-right');
-                rightCol.appendChild(titleDiv);
+        blocks.forEach(block => {
+            // تیتر
+            let title = document.createElement('div');
+            title.className = 'sec-title';
+            title.innerHTML = `<i class="fas ${block.icon}"></i> ${block.title}`;
+            contentCol.appendChild(title);
+
+            // چک ارتفاع
+            if(contentCol.scrollHeight > 1050) { // ارتفاع امن محتوا
+                contentCol.removeChild(title);
+                curPage++;
+                pages.push(createPage(curPage));
+                zone.appendChild(pages[curPage]);
+                contentCol = pages[curPage].querySelector(`#content-${curPage}`);
+                contentCol.appendChild(title);
             }
 
             // محتوا
-            if(block.type === 'text') {
-                const p = document.createElement('div');
-                p.className = 'text-block';
-                p.innerText = block.content;
-                rightCol.appendChild(p);
-                if(checkOverflow(pages[pageIdx])) {
-                    // انتقال کل متن به صفحه بعد (ساده‌ترین راه)
-                    rightCol.removeChild(p);
-                    pageIdx++;
-                    if(!pages[pageIdx]) pages.push(createPage(pageIdx));
-                    rightCol = pages[pageIdx].querySelector('.col-right');
-                    rightCol.appendChild(titleDiv.cloneNode(true)); // تکرار تیتر در صفحه بعد
-                    rightCol.appendChild(p);
-                }
-            } else if (block.type === 'list') {
+            if(block.type === 'txt') {
+                let p = document.createElement('p');
+                p.className = 'about-txt';
+                p.innerText = block.txt;
+                contentCol.appendChild(p);
+            } else {
                 block.items.forEach(item => {
-                    const itemDiv = document.createElement('div');
-                    itemDiv.className = 'timeline-item';
-                    itemDiv.innerHTML = `
-                        <div class="tl-title">${item.title}</div>
-                        <div class="tl-sub">${item.sub}</div>
-                        <span class="tl-date">${item.date}</span>
-                        <div class="tl-desc">${item.desc}</div>
+                    let d = document.createElement('div');
+                    d.className = 'job-item';
+                    d.innerHTML = `
+                        <div class="job-title">${item.title}</div>
+                        <div class="job-sub">${item.sub}</div>
+                        <span class="job-date">${item.date}</span>
+                        <div class="job-desc">${item.desc}</div>
                     `;
-                    rightCol.appendChild(itemDiv);
+                    contentCol.appendChild(d);
                     
-                    if(checkOverflow(pages[pageIdx])) {
-                        rightCol.removeChild(itemDiv);
-                        pageIdx++;
-                        if(!pages[pageIdx]) pages.push(createPage(pageIdx));
-                        rightCol = pages[pageIdx].querySelector('.col-right');
-                        rightCol.appendChild(itemDiv);
+                    // چک شکست صفحه برای هر آیتم
+                    // 1123px ارتفاع A4 است. ما حدود 1080 میگیریم که حاشیه پایین امن باشه
+                    let pageEl = pages[curPage];
+                    if(pageEl.scrollHeight > 1110) {
+                        contentCol.removeChild(d);
+                        curPage++;
+                        pages.push(createPage(curPage));
+                        zone.appendChild(pages[curPage]);
+                        contentCol = pages[curPage].querySelector(`#content-${curPage}`);
+                        contentCol.appendChild(d);
                     }
                 });
             }
         });
-
-        // --- پر کردن ستون چپ (سایدبار) ---
-        // ریست کردن ایندکس صفحه برای شروع از صفحه اول
-        pageIdx = 0;
-        let leftCol = pages[0].querySelector('.col-left');
-
-        // 1. اطلاعات تماس (همیشه صفحه اول)
-        const contactDiv = document.createElement('div');
-        contactDiv.innerHTML = `
-            <div class="section-title" style="margin-top:0"><i class="fas fa-address-card"></i> تماس</div>
-            ${resumeData.phone ? `<div class="contact-item"><span>${resumeData.phone}</span> <div class="contact-icon"><i class="fas fa-phone"></i></div></div>` : ''}
-            ${resumeData.email ? `<div class="contact-item"><span>${resumeData.email}</span> <div class="contact-icon"><i class="fas fa-envelope"></i></div></div>` : ''}
-            ${resumeData.addr ? `<div class="contact-item"><span>${resumeData.addr}</span> <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div></div>` : ''}
-        `;
-        leftCol.appendChild(contactDiv);
-
-        // 2. مهارت‌ها
-        if(resumeData.skills.length > 0) {
-            const skillTitle = document.createElement('div');
-            skillTitle.className = 'section-title';
-            skillTitle.innerHTML = `<i class="fas fa-lightbulb"></i> مهارت‌ها`;
-            leftCol.appendChild(skillTitle);
-
-            // چک کردن سرریز تیتر در سایدبار
-            // توجه: برای سایدبار باید ارتفاع کل صفحه را چک کنیم اما چون rightCol ممکنه صفحه رو بزرگ کرده باشه
-            // ما باید نسبت به ارتفاع A4 (1122px) بسنجیم
-            
-            resumeData.skills.forEach(skill => {
-                const sDiv = document.createElement('div');
-                sDiv.className = 'skill-item';
-                sDiv.innerHTML = `
-                    <div class="skill-head"><span>${skill.title}</span><span>${skill.val}%</span></div>
-                    <div class="progress-bar"><div class="progress-fill" style="width:${skill.val}%"></div></div>
-                `;
-                leftCol.appendChild(sDiv);
-
-                // لاجیک سرریز سایدبار
-                // اگر ارتفاع محتوای سایدبار از ارتفاع A4 بیشتر شد (منهای حاشیه پایین)
-                const currentHeight = leftCol.getBoundingClientRect().bottom;
-                const pageBottom = pages[pageIdx].getBoundingClientRect().bottom;
-                
-                // حدودی 20 پیکسل مانده به ته صفحه
-                if (currentHeight > pageBottom - 30) {
-                    leftCol.removeChild(sDiv);
-                    pageIdx++;
-                    if(!pages[pageIdx]) pages.push(createPage(pageIdx));
-                    leftCol = pages[pageIdx].querySelector('.col-left');
-                    // اگر صفحه جدید ساخته شد، باید تیتر مهارت رو دوباره بزنیم؟ معمولا نه در سایدبار
-                    leftCol.appendChild(sDiv);
-                }
-            });
-        }
     }
 
-    // بررسی ارتفاع صفحه نسبت به A4
-    function checkOverflow(pageElem) {
-        // ارتفاع استاندارد A4 در 96dpi حدود 1123px است
-        // ما scrollHeight محتوا را چک میکنیم
-        return pageElem.scrollHeight > 1123; 
-    }
-
-    // --- ذخیره و بازیابی پروژه ---
-    function saveProject() {
-        const dataStr = JSON.stringify(resumeData);
-        const blob = new Blob([dataStr], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
+    // --- ذخیره و بازیابی ---
+    function saveData() {
+        let json = JSON.stringify(data);
+        let blob = new Blob([json], {type: "application/json"});
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement('a');
         a.href = url;
-        a.download = `Resume_${resumeData.name}_${Date.now()}.sedat`;
+        a.download = "Resume_Project.sedat";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        alert('فایل پروژه دانلود شد!');
     }
 
-    function loadProject(input) {
-        const file = input.files[0];
-        if(!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
+    function loadData(input) {
+        if(!input.files[0]) return;
+        let r = new FileReader();
+        r.onload = e => {
             try {
-                const loadedData = JSON.parse(e.target.result);
-                // اعتبارسنجی ساده
-                if(loadedData.works && loadedData.skills) {
-                    resumeData = loadedData;
-                    renderEditors();
-                    renderResume();
-                    alert("پروژه با موفقیت بارگذاری شد.");
-                } else {
-                    alert("فایل انتخاب شده نامعتبر است.");
-                }
+                data = JSON.parse(e.target.result);
+                renderInputs();
+                render();
+                alert('پروژه بارگذاری شد.');
             } catch(err) {
-                console.error(err);
-                alert("خطا در خواندن فایل.");
+                alert('فایل خراب است.');
             }
-        };
-        reader.readAsText(file);
-        input.value = ''; // ریست
+        }
+        r.readAsText(input.files[0]);
     }
 
     // شروع
-    renderEditors();
-    renderResume();
-
+    renderInputs();
+    render();
 </script>
 </body>
 </html>
