@@ -1,0 +1,185 @@
+<style>
+    .resume-split { display: flex; height: 100vh; overflow: hidden; }
+    .resume-editor { width: 350px; background: #1e293b; border-left: 1px solid #00eaff; overflow-y: auto; padding: 20px; z-index: 10; }
+    .resume-preview { flex: 1; background: #525659; display: flex; justify-content: center; overflow-y: auto; padding: 40px; }
+    
+    .res-group { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
+    .res-group h4 { margin: 0 0 10px 0; color: #00eaff; border-bottom: 1px dashed #555; padding-bottom: 5px; }
+    .res-input { width: 100%; padding: 8px; background: #000; border: 1px solid #444; color: #fff; margin-bottom: 8px; border-radius: 5px; }
+    
+    /* استایل کاغذ رزومه */
+    .resume-paper { width: 210mm; min-height: 297mm; background: white; color: #333; box-shadow: 0 0 50px rgba(0,0,0,0.5); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+    
+    /* هدر رزومه */
+    .r-header { background: #2c3e50; color: white; padding: 30px; display: flex; align-items: center; gap: 20px; }
+    .r-photo { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #fff; object-fit: cover; background: #ddd; }
+    .r-name-box h1 { margin: 0; font-size: 24pt; }
+    .r-name-box p { margin: 5px 0 0 0; opacity: 0.8; font-size: 14pt; }
+    
+    /* بدنه رزومه */
+    .r-body { display: flex; flex: 1; }
+    .r-sidebar { width: 30%; background: #f4f4f4; padding: 20px; border-left: 1px solid #ddd; }
+    .r-main { width: 70%; padding: 25px; }
+    
+    .r-section { margin-bottom: 25px; }
+    .r-title { font-size: 14pt; font-weight: bold; color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 5px; margin-bottom: 10px; }
+    .r-item { margin-bottom: 15px; }
+    .r-item-title { font-weight: bold; font-size: 11pt; }
+    .r-item-sub { font-size: 9pt; color: #666; }
+    .r-skill-bar { height: 6px; background: #ddd; border-radius: 3px; margin-top: 5px; overflow: hidden; }
+    .r-skill-fill { height: 100%; background: #2c3e50; width: 0%; transition: width 0.5s; }
+</style>
+
+<div class="toolbar no-print">
+    <button class="btn btn-danger" onclick="closeZone()">بازگشت</button>
+    <button class="btn btn-save" onclick="exportResumePDF()">دانلود PDF</button>
+    <div style="color:white; margin-right:auto">رزومه ساز حرفه‌ای سدات</div>
+</div>
+
+<div class="resume-split">
+    <div class="resume-editor scroll-wrapper">
+        <div class="res-group">
+            <h4>اطلاعات پایه</h4>
+            <input class="res-input" placeholder="نام و نام خانوادگی" oninput="upd('rName', this.value)">
+            <input class="res-input" placeholder="عنوان شغلی (مثلا: طراح گرافیک)" oninput="upd('rJob', this.value)">
+            <input class="res-input" placeholder="شماره تماس" oninput="upd('rPhone', this.value)">
+            <input class="res-input" placeholder="ایمیل" oninput="upd('rEmail', this.value)">
+            <button class="btn btn-primary" style="width:100%; font-size:12px" onclick="document.getElementById('resPhotoInput').click()">آپلود عکس پرسنلی</button>
+            <input type="file" id="resPhotoInput" style="display:none" onchange="loadResPhoto(this)">
+        </div>
+
+        <div class="res-group">
+            <h4>درباره من</h4>
+            <textarea class="res-input" rows="4" oninput="upd('rAbout', this.value)"></textarea>
+        </div>
+
+        <div class="res-group">
+            <h4>سوابق تحصیلی <button onclick="addEdu()" style="float:left; font-size:10px">+</button></h4>
+            <div id="eduList"></div>
+        </div>
+
+        <div class="res-group">
+            <h4>سوابق شغلی <button onclick="addJob()" style="float:left; font-size:10px">+</button></h4>
+            <div id="jobList"></div>
+        </div>
+        
+        <div class="res-group">
+            <h4>مهارت‌ها <button onclick="addSkill()" style="float:left; font-size:10px">+</button></h4>
+            <div id="skillList"></div>
+        </div>
+    </div>
+
+    <div class="resume-preview">
+        <div id="resumePaper" class="resume-paper">
+            <div class="r-header">
+                <img id="rPhotoDisplay" class="r-photo" src="">
+                <div class="r-name-box">
+                    <h1 id="rName">نام شما</h1>
+                    <p id="rJob">عنوان شغلی</p>
+                </div>
+            </div>
+            <div class="r-body">
+                <div class="r-sidebar">
+                    <div class="r-section">
+                        <div class="r-title">تماس</div>
+                        <div style="font-size:10pt" id="rPhone">...</div>
+                        <div style="font-size:10pt; margin-top:5px" id="rEmail">...</div>
+                    </div>
+                    <div class="r-section">
+                        <div class="r-title">مهارت‌ها</div>
+                        <div id="rSkillsShow"></div>
+                    </div>
+                </div>
+                <div class="r-main">
+                    <div class="r-section">
+                        <div class="r-title">درباره من</div>
+                        <p style="text-align:justify" id="rAbout">توضیحات کوتاه درباره خودتان...</p>
+                    </div>
+                    <div class="r-section">
+                        <div class="r-title">سوابق شغلی</div>
+                        <div id="rJobsShow"></div>
+                    </div>
+                    <div class="r-section">
+                        <div class="r-title">سوابق تحصیلی</div>
+                        <div id="rEduShow"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // توابع داخلی ماژول رزومه
+    window.upd = function(id, val) {
+        document.getElementById(id).innerText = val;
+    }
+
+    window.loadResPhoto = function(input) {
+        if(input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('rPhotoDisplay').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // مدیریت لیست‌های داینامیک (شغل، تحصیل، مهارت)
+    window.addEdu = function() {
+        const id = Date.now();
+        const html = `<div class="r-item" id="edu-${id}">
+            <div class="r-item-title">مدرک / رشته</div>
+            <div class="r-item-sub">دانشگاه / سال</div>
+        </div>`;
+        document.getElementById('rEduShow').insertAdjacentHTML('beforeend', html);
+        
+        const inputHtml = `<div style="border-bottom:1px solid #555; padding-bottom:10px; margin-bottom:10px">
+            <input class="res-input" placeholder="مقطع و رشته" oninput="document.querySelector('#edu-${id} .r-item-title').innerText=this.value">
+            <input class="res-input" placeholder="نام دانشگاه و سال" oninput="document.querySelector('#edu-${id} .r-item-sub').innerText=this.value">
+        </div>`;
+        document.getElementById('eduList').insertAdjacentHTML('beforeend', inputHtml);
+    }
+
+    window.addJob = function() {
+        const id = Date.now();
+        const html = `<div class="r-item" id="job-${id}">
+            <div class="r-item-title">سمت شغلی</div>
+            <div class="r-item-sub">نام شرکت - مدت زمان</div>
+            <div style="font-size:10pt; color:#444">توضیحات مختصر...</div>
+        </div>`;
+        document.getElementById('rJobsShow').insertAdjacentHTML('beforeend', html);
+        
+        const inputHtml = `<div style="border-bottom:1px solid #555; padding-bottom:10px; margin-bottom:10px">
+            <input class="res-input" placeholder="سمت" oninput="document.querySelector('#job-${id} .r-item-title').innerText=this.value">
+            <input class="res-input" placeholder="شرکت و زمان" oninput="document.querySelector('#job-${id} .r-item-sub').innerText=this.value">
+            <input class="res-input" placeholder="توضیحات" oninput="document.querySelector('#job-${id} div:last-child').innerText=this.value">
+        </div>`;
+        document.getElementById('jobList').insertAdjacentHTML('beforeend', inputHtml);
+    }
+
+    window.addSkill = function() {
+        const id = Date.now();
+        const html = `<div style="margin-bottom:10px" id="skill-${id}">
+            <div style="display:flex; justify-content:space-between"><span>مهارت</span><span>%</span></div>
+            <div class="r-skill-bar"><div class="r-skill-fill" style="width:50%"></div></div>
+        </div>`;
+        document.getElementById('rSkillsShow').insertAdjacentHTML('beforeend', html);
+
+        const inputHtml = `<div style="border-bottom:1px solid #555; padding-bottom:10px; margin-bottom:10px">
+            <input class="res-input" placeholder="نام مهارت" oninput="document.querySelector('#skill-${id} span').innerText=this.value">
+            <input type="range" class="range-input" min="0" max="100" value="50" oninput="document.querySelector('#skill-${id} .r-skill-fill').style.width=this.value+'%'">
+        </div>`;
+        document.getElementById('skillList').insertAdjacentHTML('beforeend', inputHtml);
+    }
+
+    window.exportResumePDF = function() {
+        const el = document.getElementById('resumePaper');
+        window.html2canvas(el, {scale: 2}).then(canvas => {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            pdf.addImage(canvas.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, 210, 297);
+            pdf.save('Resume.pdf');
+        });
+    }
+</script>
