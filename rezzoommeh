@@ -1,185 +1,443 @@
 <style>
-    .resume-split { display: flex; height: 100vh; overflow: hidden; }
-    .resume-editor { width: 350px; background: #1e293b; border-left: 1px solid #00eaff; overflow-y: auto; padding: 20px; z-index: 10; }
-    .resume-preview { flex: 1; background: #525659; display: flex; justify-content: center; overflow-y: auto; padding: 40px; }
+    /* --- چیدمان کلی --- */
+    .resume-split { display: flex; height: 100vh; overflow: hidden; background: #0f172a; }
+    .resume-editor { width: 380px; background: #1e293b; border-left: 2px solid #00eaff; overflow-y: auto; padding: 20px; z-index: 10; display: flex; flex-direction: column; gap: 15px; }
+    .resume-preview-area { flex: 1; background: #525659; display: flex; flex-direction: column; align-items: center; overflow-y: auto; padding: 40px; gap: 20px; }
     
-    .res-group { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
-    .res-group h4 { margin: 0 0 10px 0; color: #00eaff; border-bottom: 1px dashed #555; padding-bottom: 5px; }
-    .res-input { width: 100%; padding: 8px; background: #000; border: 1px solid #444; color: #fff; margin-bottom: 8px; border-radius: 5px; }
+    /* --- استایل‌های ادیتور --- */
+    .res-group { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+    .res-group h4 { margin: 0 0 15px 0; color: #00eaff; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #444; padding-bottom: 8px; }
+    .res-input { width: 100%; padding: 10px; background: #0f172a; border: 1px solid #334155; color: #fff; margin-bottom: 10px; border-radius: 8px; font-size: 13px; transition: 0.2s; }
+    .res-input:focus { border-color: #00eaff; outline: none; }
+    .res-btn-add { background: #22c55e; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+    .del-btn { color: #ef4444; cursor: pointer; float: left; }
+
+    /* --- استایل‌های کاغذ و صفحه‌بندی --- */
+    .resume-page { 
+        width: 210mm; height: 296mm; background: white; color: #333; 
+        box-shadow: 0 0 50px rgba(0,0,0,0.5); position: relative; overflow: hidden; 
+        display: flex; flex-direction: column; padding: 0; margin-bottom: 20px;
+        transition: 0.3s;
+    }
     
-    /* استایل کاغذ رزومه */
-    .resume-paper { width: 210mm; min-height: 297mm; background: white; color: #333; box-shadow: 0 0 50px rgba(0,0,0,0.5); position: relative; overflow: hidden; display: flex; flex-direction: column; }
+    /* خط راهنمای شکست صفحه (فقط بصری) */
+    .page-break-marker {
+        width: 100%; height: 2px; background: repeating-linear-gradient(90deg, red 0, red 10px, transparent 10px, transparent 20px);
+        position: absolute; bottom: 0; left: 0; pointer-events: none; opacity: 0.5;
+    }
+
+    /* --- قالب شماره ۱: کلاسیک (رسمی) --- */
+    .theme-classic .r-header { background: #f1f5f9; padding: 30px; border-bottom: 3px solid #334155; display: flex; align-items: center; gap: 20px; }
+    .theme-classic .r-photo { width: 100px; height: 100px; object-fit: cover; border-radius: 5px; border: 1px solid #ccc; }
+    .theme-classic .r-body { padding: 30px; display: flex; gap: 30px; }
+    .theme-classic .r-left { width: 65%; }
+    .theme-classic .r-right { width: 35%; border-left: 1px solid #ddd; padding-left: 20px; }
+    .theme-classic .r-title { font-size: 16px; font-weight: bold; border-bottom: 2px solid #334155; margin-bottom: 15px; padding-bottom: 5px; color: #334155; text-transform: uppercase; }
+
+    /* --- قالب شماره ۲: مدرن (شیک) --- */
+    .theme-modern .r-header { background: #2563eb; color: white; padding: 40px; text-align: center; }
+    .theme-modern .r-photo { width: 110px; height: 110px; object-fit: cover; border-radius: 50%; border: 4px solid rgba(255,255,255,0.3); margin-bottom: 10px; }
+    .theme-modern .r-body { display: flex; flex-direction: row-reverse; height: 100%; }
+    .theme-modern .r-right { width: 30%; background: #1e293b; color: #fff; padding: 20px; min-height: 200mm; }
+    .theme-modern .r-left { width: 70%; padding: 25px; }
+    .theme-modern .r-title { font-size: 15px; font-weight: bold; color: #2563eb; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+    .theme-modern .r-right .r-title { color: #00eaff; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
+    .theme-modern .r-item-sub { color: #64748b; }
+    .theme-modern .r-right .r-item-sub { color: #94a3b8; }
+
+    /* --- قالب شماره ۳: خلاقانه (مینیمال) --- */
+    .theme-creative { border-top: 10px solid #f43f5e; }
+    .theme-creative .r-header { padding: 30px 30px 10px 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .theme-creative .r-name-box h1 { font-family: 'BTitr', sans-serif; font-size: 30pt; color: #f43f5e; margin: 0; line-height: 1; }
+    .theme-creative .r-body { padding: 30px; display: block; column-count: 2; column-gap: 40px; column-rule: 1px solid #ddd; }
+    .theme-creative .r-photo { width: 80px; height: 80px; border-radius: 20px; object-fit: cover; }
+    .theme-creative .r-section { break-inside: avoid; margin-bottom: 25px; }
+    .theme-creative .r-title { background: #f43f5e; color: white; padding: 5px 10px; border-radius: 5px; display: inline-block; margin-bottom: 10px; font-size: 12px; }
+
+    /* --- المان‌های مشترک --- */
+    .r-item { margin-bottom: 12px; }
+    .r-item-head { font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; }
+    .r-item-sub { font-size: 11px; margin-bottom: 3px; opacity: 0.8; }
+    .r-item-desc { font-size: 12px; line-height: 1.6; text-align: justify; }
+    .skill-row { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+    .skill-bar-bg { flex: 1; height: 6px; background: rgba(0,0,0,0.1); border-radius: 3px; overflow: hidden; }
+    .theme-modern .skill-bar-bg { background: rgba(255,255,255,0.2); }
+    .skill-bar-fill { height: 100%; background: #333; }
+    .theme-modern .skill-bar-fill { background: #00eaff; }
+    .theme-creative .skill-bar-fill { background: #f43f5e; }
     
-    /* هدر رزومه */
-    .r-header { background: #2c3e50; color: white; padding: 30px; display: flex; align-items: center; gap: 20px; }
-    .r-photo { width: 100px; height: 100px; border-radius: 50%; border: 4px solid #fff; object-fit: cover; background: #ddd; }
-    .r-name-box h1 { margin: 0; font-size: 24pt; }
-    .r-name-box p { margin: 5px 0 0 0; opacity: 0.8; font-size: 14pt; }
-    
-    /* بدنه رزومه */
-    .r-body { display: flex; flex: 1; }
-    .r-sidebar { width: 30%; background: #f4f4f4; padding: 20px; border-left: 1px solid #ddd; }
-    .r-main { width: 70%; padding: 25px; }
-    
-    .r-section { margin-bottom: 25px; }
-    .r-title { font-size: 14pt; font-weight: bold; color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 5px; margin-bottom: 10px; }
-    .r-item { margin-bottom: 15px; }
-    .r-item-title { font-weight: bold; font-size: 11pt; }
-    .r-item-sub { font-size: 9pt; color: #666; }
-    .r-skill-bar { height: 6px; background: #ddd; border-radius: 3px; margin-top: 5px; overflow: hidden; }
-    .r-skill-fill { height: 100%; background: #2c3e50; width: 0%; transition: width 0.5s; }
+    /* هشدار صفحه */
+    .page-warning {
+        position: absolute; bottom: 10px; right: 10px; background: rgba(255,0,0,0.1); color: red;
+        font-size: 10px; padding: 5px; border: 1px solid red; border-radius: 5px; display: none;
+    }
 </style>
 
-<div class="toolbar no-print">
-    <button class="btn btn-danger" onclick="closeZone()">بازگشت</button>
-    <button class="btn btn-save" onclick="exportResumePDF()">دانلود PDF</button>
-    <div style="color:white; margin-right:auto">رزومه ساز حرفه‌ای سدات</div>
+<div class="toolbar no-print" style="justify-content: space-between;">
+    <div style="display:flex; gap:10px">
+        <button class="btn btn-danger" onclick="closeZone()">بازگشت</button>
+        <button class="btn btn-primary" onclick="document.getElementById('projectLoadInput').click()"><i class="fas fa-folder-open"></i> بازکردن پروژه (.sedat)</button>
+        <input type="file" id="projectLoadInput" accept=".sedat" style="display:none" onchange="loadProject(this)">
+    </div>
+    <div style="display:flex; gap:10px; align-items:center">
+        <span style="color:white; font-size:12px">قالب رزومه:</span>
+        <select id="themeSelector" class="btn" style="padding: 5px 10px;" onchange="changeTheme(this.value)">
+            <option value="classic">کلاسیک (رسمی)</option>
+            <option value="modern">مدرن (شیک)</option>
+            <option value="creative">خلاقانه (دو ستونه)</option>
+        </select>
+        <button class="btn btn-save" onclick="saveProject()"><i class="fas fa-save"></i> ذخیره پروژه</button>
+        <button class="btn btn-primary" onclick="exportResumePDF()"><i class="fas fa-file-pdf"></i> خروجی PDF</button>
+    </div>
 </div>
 
 <div class="resume-split">
     <div class="resume-editor scroll-wrapper">
         <div class="res-group">
-            <h4>اطلاعات پایه</h4>
-            <input class="res-input" placeholder="نام و نام خانوادگی" oninput="upd('rName', this.value)">
-            <input class="res-input" placeholder="عنوان شغلی (مثلا: طراح گرافیک)" oninput="upd('rJob', this.value)">
-            <input class="res-input" placeholder="شماره تماس" oninput="upd('rPhone', this.value)">
-            <input class="res-input" placeholder="ایمیل" oninput="upd('rEmail', this.value)">
-            <button class="btn btn-primary" style="width:100%; font-size:12px" onclick="document.getElementById('resPhotoInput').click()">آپلود عکس پرسنلی</button>
-            <input type="file" id="resPhotoInput" style="display:none" onchange="loadResPhoto(this)">
+            <h4>اطلاعات شخصی</h4>
+            <input class="res-input" placeholder="نام و نام خانوادگی" id="in_name" oninput="updateData('personal', 'name', this.value)">
+            <input class="res-input" placeholder="عنوان شغلی (مثلاً: برنامه نویس)" id="in_job" oninput="updateData('personal', 'job', this.value)">
+            <div style="display:flex; gap:5px">
+                <input class="res-input" placeholder="شماره تماس" id="in_phone" oninput="updateData('personal', 'phone', this.value)">
+                <input class="res-input" placeholder="ایمیل" id="in_email" oninput="updateData('personal', 'email', this.value)">
+            </div>
+            <input class="res-input" placeholder="آدرس / وب‌سایت" id="in_addr" oninput="updateData('personal', 'addr', this.value)">
+            <button class="btn btn-primary" style="width:100%; font-size:12px; margin-top:5px" onclick="document.getElementById('resPhotoIn').click()">انتخاب عکس پرسنلی</button>
+            <input type="file" id="resPhotoIn" style="display:none" accept="image/*" onchange="updatePhoto(this)">
         </div>
 
         <div class="res-group">
             <h4>درباره من</h4>
-            <textarea class="res-input" rows="4" oninput="upd('rAbout', this.value)"></textarea>
+            <textarea class="res-input" rows="4" id="in_about" placeholder="توضیحات کوتاه..." oninput="updateData('personal', 'about', this.value)"></textarea>
         </div>
 
         <div class="res-group">
-            <h4>سوابق تحصیلی <button onclick="addEdu()" style="float:left; font-size:10px">+</button></h4>
-            <div id="eduList"></div>
+            <h4>سوابق تحصیلی <button class="res-btn-add" onclick="addItem('edu')">+</button></h4>
+            <div id="editor_edu_list"></div>
         </div>
 
         <div class="res-group">
-            <h4>سوابق شغلی <button onclick="addJob()" style="float:left; font-size:10px">+</button></h4>
-            <div id="jobList"></div>
+            <h4>سوابق شغلی <button class="res-btn-add" onclick="addItem('work')">+</button></h4>
+            <div id="editor_work_list"></div>
         </div>
-        
+
         <div class="res-group">
-            <h4>مهارت‌ها <button onclick="addSkill()" style="float:left; font-size:10px">+</button></h4>
-            <div id="skillList"></div>
+            <h4>مهارت‌ها <button class="res-btn-add" onclick="addItem('skill')">+</button></h4>
+            <div id="editor_skill_list"></div>
         </div>
     </div>
 
-    <div class="resume-preview">
-        <div id="resumePaper" class="resume-paper">
-            <div class="r-header">
-                <img id="rPhotoDisplay" class="r-photo" src="">
-                <div class="r-name-box">
-                    <h1 id="rName">نام شما</h1>
-                    <p id="rJob">عنوان شغلی</p>
-                </div>
+    <div class="resume-preview-area" id="previewArea">
+        <div id="resumePage1" class="resume-page theme-classic">
             </div>
-            <div class="r-body">
-                <div class="r-sidebar">
-                    <div class="r-section">
-                        <div class="r-title">تماس</div>
-                        <div style="font-size:10pt" id="rPhone">...</div>
-                        <div style="font-size:10pt; margin-top:5px" id="rEmail">...</div>
-                    </div>
-                    <div class="r-section">
-                        <div class="r-title">مهارت‌ها</div>
-                        <div id="rSkillsShow"></div>
-                    </div>
-                </div>
-                <div class="r-main">
-                    <div class="r-section">
-                        <div class="r-title">درباره من</div>
-                        <p style="text-align:justify" id="rAbout">توضیحات کوتاه درباره خودتان...</p>
-                    </div>
-                    <div class="r-section">
-                        <div class="r-title">سوابق شغلی</div>
-                        <div id="rJobsShow"></div>
-                    </div>
-                    <div class="r-section">
-                        <div class="r-title">سوابق تحصیلی</div>
-                        <div id="rEduShow"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
 <script>
-    // توابع داخلی ماژول رزومه
-    window.upd = function(id, val) {
-        document.getElementById(id).innerText = val;
+    // --- مدیریت داده‌ها (State Management) ---
+    // این آبجکت تمام اطلاعات رزومه را نگه می‌دارد
+    let resumeData = {
+        theme: 'classic',
+        personal: { name: 'نام شما', job: 'عنوان شغلی', phone: '', email: '', addr: '', about: '', photo: '' },
+        edu: [],
+        work: [],
+        skill: []
+    };
+
+    // 1. تابع رندر کردن (قلب تپنده سیستم)
+    // هر تغییری که ایجاد شود، این تابع کل رزومه را دوباره می‌سازد
+    function renderResume() {
+        const d = resumeData;
+        const p = d.personal;
+        
+        // ساختار HTML بر اساس قالب انتخاب شده
+        let html = '';
+        
+        // --- چیدمان محتوا بر اساس تم ---
+        if (d.theme === 'classic') {
+            html = `
+                <div class="r-header">
+                    ${p.photo ? `<img src="${p.photo}" class="r-photo">` : ''}
+                    <div>
+                        <h1 style="margin:0; font-size:24px">${p.name}</h1>
+                        <p style="margin:5px 0; color:#666">${p.job}</p>
+                        <div style="font-size:12px; margin-top:5px">
+                            ${p.phone ? `<span>📞 ${p.phone}</span>` : ''} 
+                            ${p.email ? `<span style="margin-right:10px">✉️ ${p.email}</span>` : ''}
+                            ${p.addr ? `<span style="margin-right:10px">📍 ${p.addr}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="r-body">
+                    <div class="r-right">
+                        ${renderSection('درباره من', p.about ? `<p style="font-size:12px; text-align:justify">${p.about}</p>` : '')}
+                        ${renderListSection('مهارت‌ها', d.skill, 'skill')}
+                        ${renderListSection('تحصیلات', d.edu, 'edu_simple')}
+                    </div>
+                    <div class="r-left">
+                        ${renderListSection('سوابق شغلی', d.work, 'work')}
+                    </div>
+                </div>
+            `;
+        } 
+        else if (d.theme === 'modern') {
+            html = `
+                <div class="r-header">
+                    ${p.photo ? `<img src="${p.photo}" class="r-photo">` : ''}
+                    <h1 style="margin:0; font-size:28px">${p.name}</h1>
+                    <p style="margin:5px 0; opacity:0.8">${p.job}</p>
+                </div>
+                <div class="r-body">
+                    <div class="r-left">
+                        ${renderSection('درباره من', `<p style="font-size:13px; text-align:justify; line-height:1.8">${p.about}</p>`)}
+                        ${renderListSection('سوابق شغلی', d.work, 'work')}
+                        ${renderListSection('سوابق تحصیلی', d.edu, 'work')} 
+                    </div>
+                    <div class="r-right">
+                        <div class="r-title">اطلاعات تماس</div>
+                        <div style="font-size:12px; line-height:2">
+                            ${p.phone} <br> ${p.email} <br> ${p.addr}
+                        </div>
+                        <br>
+                        ${renderListSection('مهارت‌ها', d.skill, 'skill')}
+                    </div>
+                </div>
+            `;
+        }
+        else if (d.theme === 'creative') {
+             html = `
+                <div class="r-header">
+                    <div class="r-name-box">
+                        <h1>${p.name}</h1>
+                        <p style="color:#666; font-size:14px">${p.job}</p>
+                        <div style="font-size:11px; color:#888; margin-top:5px">
+                            ${p.phone} | ${p.email} | ${p.addr}
+                        </div>
+                    </div>
+                    ${p.photo ? `<img src="${p.photo}" class="r-photo">` : ''}
+                </div>
+                <div class="r-body">
+                    ${p.about ? `<div class="r-section"><div class="r-title">پروفایل</div><p style="font-size:12px">${p.about}</p></div>` : ''}
+                    ${renderListSection('تجربیات کاری', d.work, 'work')}
+                    ${renderListSection('تحصیلات', d.edu, 'work')}
+                    ${renderListSection('تخصص‌ها', d.skill, 'skill')}
+                </div>
+            `;
+        }
+
+        const page = document.getElementById('resumePage1');
+        page.className = `resume-page theme-${d.theme}`; // اعمال کلاس تم
+        page.innerHTML = html + '<div class="page-warning">متن از صفحه خارج شد!</div>';
+        
+        checkOverflow();
     }
 
-    window.loadResPhoto = function(input) {
-        if(input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('rPhotoDisplay').src = e.target.result;
+    // توابع کمکی رندر
+    function renderSection(title, content) {
+        if (!content) return '';
+        return `<div class="r-section"><div class="r-title">${title}</div>${content}</div>`;
+    }
+
+    function renderListSection(title, items, type) {
+        if (!items || items.length === 0) return '';
+        let html = `<div class="r-section"><div class="r-title">${title}</div>`;
+        
+        items.forEach(item => {
+            if (type === 'work' || type === 'edu_simple') {
+                html += `
+                    <div class="r-item">
+                        <div class="r-item-head">
+                            <span>${item.title}</span>
+                            <span style="font-size:11px; color:#666">${item.date || ''}</span>
+                        </div>
+                        <div class="r-item-sub">${item.sub || ''}</div>
+                        ${item.desc ? `<div class="r-item-desc">${item.desc}</div>` : ''}
+                    </div>`;
+            } else if (type === 'skill') {
+                html += `
+                    <div class="skill-row">
+                        <span style="font-size:12px; width:40%">${item.title}</span>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width:${item.val}%"></div></div>
+                    </div>`;
             }
-            reader.readAsDataURL(input.files[0]);
+        });
+        return html + '</div>';
+    }
+
+    // 2. توابع آپدیت داده‌ها از طریق ورودی‌ها
+    function updateData(section, key, val) {
+        if (section === 'personal') {
+            resumeData.personal[key] = val;
+        }
+        renderResume();
+    }
+
+    function updatePhoto(input) {
+        if (input.files && input.files[0]) {
+            const r = new FileReader();
+            r.onload = e => {
+                resumeData.personal.photo = e.target.result;
+                renderResume();
+            };
+            r.readAsDataURL(input.files[0]);
         }
     }
 
-    // مدیریت لیست‌های داینامیک (شغل، تحصیل، مهارت)
-    window.addEdu = function() {
+    // مدیریت لیست‌ها (شغل، تحصیل، مهارت)
+    function addItem(type) {
         const id = Date.now();
-        const html = `<div class="r-item" id="edu-${id}">
-            <div class="r-item-title">مدرک / رشته</div>
-            <div class="r-item-sub">دانشگاه / سال</div>
-        </div>`;
-        document.getElementById('rEduShow').insertAdjacentHTML('beforeend', html);
-        
-        const inputHtml = `<div style="border-bottom:1px solid #555; padding-bottom:10px; margin-bottom:10px">
-            <input class="res-input" placeholder="مقطع و رشته" oninput="document.querySelector('#edu-${id} .r-item-title').innerText=this.value">
-            <input class="res-input" placeholder="نام دانشگاه و سال" oninput="document.querySelector('#edu-${id} .r-item-sub').innerText=this.value">
-        </div>`;
-        document.getElementById('eduList').insertAdjacentHTML('beforeend', inputHtml);
+        const newItem = { id: id, title: '', sub: '', date: '', desc: '', val: 50 };
+        resumeData[type].push(newItem);
+        renderEditorList(type); // بازسازی لیست اینپوت‌ها
+        renderResume();
     }
 
-    window.addJob = function() {
-        const id = Date.now();
-        const html = `<div class="r-item" id="job-${id}">
-            <div class="r-item-title">سمت شغلی</div>
-            <div class="r-item-sub">نام شرکت - مدت زمان</div>
-            <div style="font-size:10pt; color:#444">توضیحات مختصر...</div>
-        </div>`;
-        document.getElementById('rJobsShow').insertAdjacentHTML('beforeend', html);
-        
-        const inputHtml = `<div style="border-bottom:1px solid #555; padding-bottom:10px; margin-bottom:10px">
-            <input class="res-input" placeholder="سمت" oninput="document.querySelector('#job-${id} .r-item-title').innerText=this.value">
-            <input class="res-input" placeholder="شرکت و زمان" oninput="document.querySelector('#job-${id} .r-item-sub').innerText=this.value">
-            <input class="res-input" placeholder="توضیحات" oninput="document.querySelector('#job-${id} div:last-child').innerText=this.value">
-        </div>`;
-        document.getElementById('jobList').insertAdjacentHTML('beforeend', inputHtml);
+    function updateItem(type, id, key, val) {
+        const item = resumeData[type].find(i => i.id === id);
+        if(item) {
+            item[key] = val;
+            renderResume();
+        }
     }
 
-    window.addSkill = function() {
-        const id = Date.now();
-        const html = `<div style="margin-bottom:10px" id="skill-${id}">
-            <div style="display:flex; justify-content:space-between"><span>مهارت</span><span>%</span></div>
-            <div class="r-skill-bar"><div class="r-skill-fill" style="width:50%"></div></div>
-        </div>`;
-        document.getElementById('rSkillsShow').insertAdjacentHTML('beforeend', html);
-
-        const inputHtml = `<div style="border-bottom:1px solid #555; padding-bottom:10px; margin-bottom:10px">
-            <input class="res-input" placeholder="نام مهارت" oninput="document.querySelector('#skill-${id} span').innerText=this.value">
-            <input type="range" class="range-input" min="0" max="100" value="50" oninput="document.querySelector('#skill-${id} .r-skill-fill').style.width=this.value+'%'">
-        </div>`;
-        document.getElementById('skillList').insertAdjacentHTML('beforeend', inputHtml);
+    function deleteItem(type, id) {
+        resumeData[type] = resumeData[type].filter(i => i.id !== id);
+        renderEditorList(type);
+        renderResume();
     }
 
-    window.exportResumePDF = function() {
-        const el = document.getElementById('resumePaper');
-        window.html2canvas(el, {scale: 2}).then(canvas => {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(canvas.toDataURL('image/jpeg', 0.9), 'JPEG', 0, 0, 210, 297);
-            pdf.save('Resume.pdf');
+    // ساخت اینپوت‌ها در سایدبار ادیتور
+    function renderEditorList(type) {
+        const container = document.getElementById(`editor_${type}_list`);
+        container.innerHTML = '';
+        resumeData[type].forEach(item => {
+            let inputs = '';
+            if (type === 'skill') {
+                inputs = `
+                    <input class="res-input" style="width:60%" placeholder="نام مهارت" value="${item.title}" oninput="updateItem('${type}', ${item.id}, 'title', this.value)">
+                    <input type="range" style="width:30%" min="0" max="100" value="${item.val}" oninput="updateItem('${type}', ${item.id}, 'val', this.value)">
+                `;
+            } else {
+                inputs = `
+                    <input class="res-input" placeholder="عنوان (مثلا نام شرکت)" value="${item.title}" oninput="updateItem('${type}', ${item.id}, 'title', this.value)">
+                    <div style="display:flex; gap:5px">
+                        <input class="res-input" placeholder="زیرعنوان (سمت)" value="${item.sub}" oninput="updateItem('${type}', ${item.id}, 'sub', this.value)">
+                        <input class="res-input" placeholder="تاریخ" value="${item.date}" oninput="updateItem('${type}', ${item.id}, 'date', this.value)">
+                    </div>
+                    <textarea class="res-input" rows="2" placeholder="توضیحات" oninput="updateItem('${type}', ${item.id}, 'desc', this.value)">${item.desc}</textarea>
+                `;
+            }
+            
+            const div = document.createElement('div');
+            div.style.cssText = 'border-bottom:1px solid #444; margin-bottom:10px; padding-bottom:5px;';
+            div.innerHTML = `<i class="fas fa-trash del-btn" onclick="deleteItem('${type}', ${item.id})"></i>` + inputs;
+            container.appendChild(div);
         });
     }
+
+    // 3. تغییر تم
+    function changeTheme(themeName) {
+        resumeData.theme = themeName;
+        renderResume();
+    }
+
+    // 4. بررسی ارتفاع محتوا (تشخیص صفحه دوم)
+    function checkOverflow() {
+        const page = document.getElementById('resumePage1');
+        const warning = page.querySelector('.page-warning');
+        
+        // ارتفاع استاندارد A4 حدود 1122 پیکسل است
+        if (page.scrollHeight > 1130) {
+            warning.style.display = 'block';
+            warning.innerText = `⚠️ محتوا بیشتر از یک صفحه A4 شد! در خروجی PDF به صفحه بعد می‌رود.`;
+        } else {
+            warning.style.display = 'none';
+        }
+    }
+
+    // 5. ذخیره و بازیابی پروژه (.sedat)
+    function saveProject() {
+        const dataStr = JSON.stringify(resumeData);
+        const blob = new Blob([dataStr], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Resume_Project_${Date.now()}.sedat`;
+        a.click();
+    }
+
+    function loadProject(input) {
+        if (!input.files[0]) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const loadedData = JSON.parse(e.target.result);
+                // ادغام اطلاعات (اگر فیلدی در فایل نبود، مقدار پیشفرض بماند)
+                resumeData = { ...resumeData, ...loadedData };
+                
+                // بروزرسانی تمام اینپوت‌های ادیتور با داده‌های جدید
+                document.getElementById('in_name').value = resumeData.personal.name || '';
+                document.getElementById('in_job').value = resumeData.personal.job || '';
+                document.getElementById('in_phone').value = resumeData.personal.phone || '';
+                document.getElementById('in_email').value = resumeData.personal.email || '';
+                document.getElementById('in_addr').value = resumeData.personal.addr || '';
+                document.getElementById('in_about').value = resumeData.personal.about || '';
+                document.getElementById('themeSelector').value = resumeData.theme;
+
+                renderEditorList('edu');
+                renderEditorList('work');
+                renderEditorList('skill');
+                
+                renderResume();
+                alert('پروژه با موفقیت بارگذاری شد و می‌توانید ادامه دهید!');
+            } catch (err) {
+                alert('فایل انتخاب شده نامعتبر است.');
+                console.error(err);
+            }
+        };
+        reader.readAsText(input.files[0]);
+        input.value = ''; // ریست کردن اینپوت فایل
+    }
+
+    // 6. خروجی PDF (با قابلیت چند صفحه‌ای)
+    function exportResumePDF() {
+        const element = document.getElementById('resumePage1');
+        const warning = element.querySelector('.page-warning');
+        if(warning) warning.style.display = 'none'; // مخفی کردن هشدار قبل از پرینت
+
+        // استفاده از html2canvas برای عکس گرفتن از کل رزومه
+        html2canvas(element, { scale: 2, useCORS: true }).then(canvas => {
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            const { jsPDF } = window.jspdf;
+            
+            // ابعاد A4 به میلی‌متر
+            const pdfWidth = 210;
+            const pdfHeight = 297;
+            
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgProps = pdf.getImageProperties(imgData);
+            const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            // صفحه اول
+            pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+            heightLeft -= pdfHeight;
+
+            // اگر ارتفاع عکس بیشتر از یک صفحه بود، صفحات بعدی را اضافه کن
+            while (heightLeft > 0) {
+                position = heightLeft - imgHeight; // موقعیت صفحه بعدی
+                pdf.addPage();
+                pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, imgHeight);
+                heightLeft -= pdfHeight;
+            }
+
+            pdf.save('My_Resume.pdf');
+            if(warning) warning.style.display = 'block'; // نمایش مجدد هشدار
+        });
+    }
+
+    // بارگذاری اولیه
+    renderResume();
 </script>
