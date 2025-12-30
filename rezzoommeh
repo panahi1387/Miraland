@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>رزومه ساز آنلاین</title>
+    <title>رزومه ساز آنلاین - نسخه اصلاح شده</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
     
     <style>
         :root {
-            /* تم روشن و حرفه‌ای */
-            --primary-color: #2563eb; /* آبی مدرن */
-            --secondary-color: #0ea5e9; /* آبی آسمانی */
-            --bg-body: #f1f5f9; /* خاکستری خیلی روشن */
+            --primary-color: #2563eb;
+            --secondary-color: #0ea5e9;
+            --bg-body: #eef2f6; /* رنگ روشن برای کل صفحه */
             --bg-sidebar: #ffffff;
-            --bg-preview: #e2e8f0; /* پس زمینه قسمت پیش نمایش */
             --text-main: #334155;
             --border-color: #cbd5e1;
         }
@@ -27,35 +25,21 @@
             background-color: var(--bg-body); 
             height: 100vh; 
             display: flex; 
-            overflow: hidden;
+            overflow: hidden; /* حذف اسکرول بادی */
             color: var(--text-main);
         }
-
-        /* --- لودینگ --- */
-        #loading {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; z-index: 9999;
-            display: flex; justify-content: center; align-items: center;
-            flex-direction: column;
-            transition: opacity 0.5s;
-        }
-        .spinner {
-            width: 40px; height: 40px; border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color); border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         /* --- سایدبار (راست) --- */
         .editor-sidebar {
             width: 400px;
+            min-width: 350px; /* جلوگیری از جمع شدن */
             background: var(--bg-sidebar);
             height: 100vh;
             display: flex;
             flex-direction: column;
             border-left: 1px solid var(--border-color);
-            z-index: 100;
-            box-shadow: -4px 0 15px rgba(0,0,0,0.05);
+            z-index: 20;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.05);
         }
 
         .sidebar-header {
@@ -64,246 +48,172 @@
             border-bottom: 1px solid var(--border-color);
             display: flex; justify-content: space-between; align-items: center;
         }
-        .sidebar-header h2 { margin: 0; font-size: 18px; color: var(--primary-color); }
-
-        .sidebar-content {
-            flex: 1; overflow-y: auto; padding: 20px;
-        }
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 20px; }
 
         /* استایل فرم‌ها */
         .group-box {
-            background: #fff;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
+            background: #fff; border: 1px solid var(--border-color);
+            border-radius: 8px; padding: 15px; margin-bottom: 20px;
         }
-        .group-box h4 { margin: 0 0 15px 0; color: #1e293b; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-size: 14px; }
+        .group-box h4 { margin: 0 0 15px 0; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
 
         input, textarea {
             width: 100%; padding: 10px; margin-bottom: 10px;
-            border: 1px solid #e2e8f0; border-radius: 6px;
-            font-family: 'Vazir'; font-size: 13px; background: #f8fafc;
-            transition: 0.2s;
+            border: 1px solid #e2e8f0; border-radius: 6px; font-family: 'Vazir';
         }
-        input:focus, textarea:focus { border-color: var(--primary-color); background: #fff; box-shadow: 0 0 0 2px rgba(37,99,235,0.1); }
-
         .btn {
             padding: 10px; border: none; border-radius: 6px; cursor: pointer;
-            font-family: 'Vazir'; font-size: 13px; font-weight: bold; width: 100%;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            margin-bottom: 5px; transition: 0.2s;
+            font-family: 'Vazir'; width: 100%; margin-bottom: 5px;
         }
-        .btn:hover { transform: translateY(-1px); }
         .btn-primary { background: var(--primary-color); color: white; }
-        .btn-success { background: #10b981; color: white; }
-        .btn-danger { background: #ef4444; color: white; width: auto; padding: 4px 10px; font-size: 11px; }
-        .btn-outline { background: #fff; border: 1px solid var(--border-color); color: #64748b; }
+        .btn-danger { background: #ef4444; color: white; width: auto; padding: 5px 10px; font-size: 12px; }
 
         /* --- محیط پیش‌نمایش (چپ) --- */
         .preview-wrapper {
             flex: 1;
-            background: var(--bg-preview);
+            background-color: #cbd5e1; /* رنگ طوسی مشخص برای تشخیص فضا */
+            background-image: radial-gradient(#94a3b8 1px, transparent 1px);
+            background-size: 20px 20px;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* تغییر مهم: جلوگیری از وسط چین شدن عمودی که باعث پرش میشه */
-            overflow: auto;
+            align-items: flex-start; /* شروع از بالا */
+            overflow: auto; /* اسکرول داخلی */
+            padding: 60px 20px;
             position: relative;
-            padding: 50px;
         }
 
-        /* دکمه‌های زوم شناور */
+        /* دکمه‌های زوم */
         .zoom-controls {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            background: #fff; padding: 8px 15px; border-radius: 50px;
-            display: flex; gap: 15px; align-items: center;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15); z-index: 200;
+            position: fixed; bottom: 30px; left: 30px;
+            background: #fff; padding: 10px; border-radius: 50px;
+            display: flex; gap: 10px; align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 100;
         }
-        .zoom-btn { background: none; border: none; cursor: pointer; font-size: 16px; color: #475569; }
-        .zoom-btn:hover { color: var(--primary-color); }
+        .zoom-btn { background: #f1f5f9; border: none; cursor: pointer; width: 30px; height: 30px; border-radius: 50%; font-weight: bold;}
 
         /* --- کاغذ A4 --- */
         .a4-page {
             width: 210mm;
             min-height: 297mm;
-            background: white;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            background: white !important; /* حتما سفید باشه */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             position: relative;
-            overflow: hidden;
-            display: flex; flex-direction: column;
             margin-bottom: 40px;
-            transform-origin: top center; /* زوم از بالا انجام میشه */
+            /* ترنزیشن حذف شد تا پرش نداشته باشه */
+            flex-shrink: 0; /* جلوگیری از جمع شدن در فلکس */
         }
 
-        /* --- طراحی داخلی رزومه --- */
-        .header-top { height: 170px; position: relative; background: #f8fafc; }
+        /* --- استایل داخلی رزومه --- */
+        .header-top { height: 160px; position: relative; background: #f8fafc; overflow: hidden; }
         .shape-1 {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--primary-color);
-            clip-path: polygon(0 0, 100% 0, 100% 75%, 0 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 80%, 0 100%);
         }
-        .shape-2 {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--secondary-color); opacity: 0.5;
-            clip-path: polygon(0 0, 100% 0, 100% 65%, 0 90%);
-        }
-
         .header-content {
-            position: relative; z-index: 10; padding: 35px 40px;
-            display: flex; justify-content: space-between; align-items: flex-start;
+            position: relative; z-index: 10; padding: 30px;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .header-txt { color: white; width: 65%; }
-        .header-txt h1 { margin: 0; font-size: 34px; font-weight: 900; letter-spacing: -1px; }
-        .header-txt p { margin: 8px 0 0 0; font-size: 18px; opacity: 0.95; font-weight: 300; }
-
+        .header-txt h1 { margin: 0; color: white; font-size: 32px; }
+        .header-txt p { margin: 5px 0 0; color: rgba(255,255,255,0.9); font-size: 16px; }
         .user-photo {
-            width: 130px; height: 130px; border-radius: 50%;
-            border: 5px solid white; background: #fff;
-            object-fit: cover; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            position: relative; top: 10px;
+            width: 110px; height: 110px; border-radius: 50%;
+            border: 4px solid white; background: #fff; object-fit: cover;
         }
 
-        .main-body { display: flex; flex: 1; }
-        .col-side { width: 35%; background: #f8fafc; border-left: 1px solid #e2e8f0; padding: 50px 25px 30px; }
-        .col-main { width: 65%; padding: 40px 35px; }
+        .main-body { display: flex; min-height: 800px; }
+        .col-side { width: 32%; background: #f1f5f9; padding: 30px 20px; border-left: 1px solid #e2e8f0; }
+        .col-main { width: 68%; padding: 30px; }
 
         .sec-head {
-            font-size: 15px; font-weight: 800; color: #334155;
+            font-size: 16px; font-weight: bold; color: #1e293b;
             border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 8px; margin-bottom: 15px;
-            display: flex; align-items: center; gap: 10px;
+            padding-bottom: 5px; margin-bottom: 15px; margin-top: 10px;
         }
-        .sec-head i { color: var(--secondary-color); font-size: 16px; }
-
-        /* آیتم‌های تماس */
-        .contact-row {
-            display: flex; align-items: center; justify-content: flex-end; gap: 10px;
-            margin-bottom: 12px; font-size: 12px; color: #475569;
-        }
-        .contact-row i { color: var(--primary-color); width: 20px; text-align: center; }
-
-        /* مهارت */
-        .skill-item { margin-bottom: 15px; }
-        .skill-info { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; font-weight: 600; color: #475569; }
-        .skill-track { width: 100%; height: 6px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
-        .skill-bar { height: 100%; background: var(--primary-color); border-radius: 10px; }
-
-        /* تایم‌لاین */
-        .timeline-box {
-            position: relative; padding-right: 20px; margin-bottom: 30px;
-            border-right: 2px solid #f1f5f9;
-        }
+        
+        .timeline-box { margin-bottom: 20px; border-right: 2px solid #e2e8f0; padding-right: 15px; position: relative; }
         .timeline-box::before {
-            content: ''; position: absolute; right: -6px; top: 6px;
-            width: 10px; height: 10px; background: var(--secondary-color);
-            border-radius: 50%; ring: 4px solid white;
+            content: ''; position: absolute; right: -6px; top: 5px;
+            width: 10px; height: 10px; background: var(--secondary-color); border-radius: 50%;
         }
-        .t-title { font-weight: bold; font-size: 14px; color: #0f172a; }
-        .t-sub { font-size: 12px; color: var(--primary-color); font-weight: 600; margin: 3px 0; }
-        .t-date { font-size: 11px; color: #94a3b8; display: block; margin-bottom: 8px; }
-        .t-desc { font-size: 13px; color: #334155; line-height: 1.7; text-align: justify; }
+        .t-title { font-weight: bold; font-size: 14px; }
+        .t-date { font-size: 11px; color: #64748b; display: block; margin-bottom: 5px; }
+        .t-desc { font-size: 13px; color: #334155; line-height: 1.6; text-align: justify; }
 
         /* چاپ */
         @media print {
-            body { background: white; display: block; height: auto; overflow: visible; }
-            .editor-sidebar, .zoom-controls, #loading { display: none !important; }
-            .preview-wrapper { padding: 0; display: block; background: white; }
-            .a4-page { margin: 0; box-shadow: none; page-break-after: always; transform: none !important; width: 100%; }
+            body { display: block; background: white; height: auto; overflow: visible; }
+            .editor-sidebar, .zoom-controls { display: none !important; }
+            .preview-wrapper { display: block; padding: 0; background: white; overflow: visible; }
+            .a4-page { margin: 0; box-shadow: none; width: 100%; page-break-after: always; transform: none !important; }
         }
     </style>
 </head>
 <body>
 
-<div id="loading">
-    <div class="spinner"></div>
-    <p style="margin-top:10px; font-size:14px; color:#666">در حال آماده‌سازی...</p>
-</div>
-
 <div class="editor-sidebar">
     <div class="sidebar-header">
-        <h2>رزومه ساز حرفه‌ای</h2>
-        <button class="btn-success" style="width:auto; padding:5px 15px;" onclick="window.print()"><i class="fas fa-print"></i> دانلود</button>
+        <h3 style="margin:0">ویرایشگر</h3>
+        <button class="btn-primary" style="width:auto; padding:5px 15px" onclick="window.print()">دانلود PDF</button>
     </div>
 
     <div class="sidebar-content">
         <div class="group-box">
-            <h4><i class="fas fa-palette"></i> رنگ‌بندی</h4>
-            <div style="display:flex; gap:10px;">
-                <input type="color" id="col1" value="#2563eb" oninput="setColors()" style="height:40px; width:50%">
-                <input type="color" id="col2" value="#0ea5e9" oninput="setColors()" style="height:40px; width:50%">
-            </div>
-        </div>
-
-        <div class="group-box">
-            <h4><i class="fas fa-user"></i> مشخصات فردی</h4>
-            <input placeholder="نام و نام خانوادگی" id="in_name" oninput="up('name',this.value)">
+            <h4>مشخصات</h4>
+            <input placeholder="نام کامل" id="in_name" oninput="up('name',this.value)">
             <input placeholder="عنوان شغلی" id="in_job" oninput="up('job',this.value)">
-            <textarea placeholder="درباره من..." rows="3" id="in_about" oninput="up('about',this.value)"></textarea>
-            <button class="btn btn-outline" onclick="document.getElementById('f_img').click()">آپلود عکس</button>
+            <textarea placeholder="درباره من" rows="3" id="in_about" oninput="up('about',this.value)"></textarea>
+            <button class="btn" style="border:1px dashed #ccc" onclick="document.getElementById('f_img').click()">انتخاب عکس</button>
             <input type="file" id="f_img" hidden onchange="upImg(this)">
         </div>
 
         <div class="group-box">
-            <h4><i class="fas fa-phone"></i> تماس</h4>
-            <input placeholder="موبایل" id="in_phone" oninput="up('phone',this.value)">
+            <h4>اطلاعات تماس</h4>
+            <input placeholder="تلفن" id="in_phone" oninput="up('phone',this.value)">
             <input placeholder="ایمیل" id="in_email" oninput="up('email',this.value)">
             <input placeholder="آدرس" id="in_addr" oninput="up('addr',this.value)">
         </div>
 
         <div class="group-box">
-            <h4>سوابق شغلی <button class="btn-success" style="float:left; width:auto; padding:2px 8px" onclick="add('works')">+</button></h4>
+            <h4>سوابق شغلی <button class="btn-primary" style="float:left; width:auto; padding:0 8px" onclick="add('works')">+</button></h4>
             <div id="list_works"></div>
         </div>
 
         <div class="group-box">
-            <h4>تحصیلات <button class="btn-success" style="float:left; width:auto; padding:2px 8px" onclick="add('edus')">+</button></h4>
-            <div id="list_edus"></div>
-        </div>
-
-        <div class="group-box">
-            <h4>مهارت‌ها <button class="btn-success" style="float:left; width:auto; padding:2px 8px" onclick="add('skills')">+</button></h4>
+            <h4>مهارت‌ها <button class="btn-primary" style="float:left; width:auto; padding:0 8px" onclick="add('skills')">+</button></h4>
             <div id="list_skills"></div>
         </div>
-        
-        <button class="btn btn-outline" onclick="saveJson()">ذخیره پروژه</button>
-        <button class="btn btn-outline" onclick="document.getElementById('f_load').click()">باز کردن پروژه</button>
-        <input type="file" id="f_load" hidden onchange="loadJson(this)">
     </div>
 </div>
 
 <div class="preview-wrapper" id="prevWrap">
-    <div id="renderZone"></div>
+    <div id="renderZone" style="transform-origin: top center; transition: transform 0.1s;"></div>
     
     <div class="zoom-controls">
-        <button class="zoom-btn" onclick="zoom(-0.1)"><i class="fas fa-minus"></i></button>
-        <span id="zoomTxt" style="font-size:13px; font-weight:bold; width:40px; text-align:center">Auto</span>
-        <button class="zoom-btn" onclick="zoom(0.1)"><i class="fas fa-plus"></i></button>
+        <button class="zoom-btn" onclick="zoom(-0.1)">-</button>
+        <button class="zoom-btn" onclick="fitZoom()" style="width:auto; padding:0 10px; font-size:12px">Fit</button>
+        <button class="zoom-btn" onclick="zoom(0.1)">+</button>
     </div>
 </div>
 
 <script>
-    // --- داده‌های اولیه ---
+    // داده‌های پیش‌فرض برای تست
     let data = {
-        name: "دانیال یوسفی",
-        job: "برنامه‌نویس Full Stack",
-        about: "علاقه‌مند به توسعه نرم‌افزار با تمرکز بر رابط کاربری و تجربه کاربری. توانایی حل مسئله و کار تیمی بالا.",
-        phone: "09121234567",
-        email: "daniyal@mail.com",
-        addr: "تهران، ایران",
+        name: "کاربر آزمایشی",
+        job: "مدیر پروژه",
+        about: "توضیحات کوتاه درباره من...",
+        phone: "09120000000",
+        email: "email@example.com",
+        addr: "تهران",
         photo: "",
         works: [
-            { id: 1, title: "توسعه دهنده وب", sub: "شرکت پیشگامان", date: "1401 - اکنون", desc: "طراحی و پیاده‌سازی پنل‌های مدیریتی با React." }
-        ],
-        edus: [
-            { id: 1, title: "مهندسی کامپیوتر", sub: "دانشگاه آزاد", date: "1397 - 1401", desc: "معدل الف" }
+            { id: 1, title: "عنوان شغل", date: "1402", desc: "توضیحات مسئولیت‌ها..." }
         ],
         skills: [
-            { id: 1, title: "HTML/CSS", val: 95 },
-            { id: 2, title: "JavaScript", val: 80 }
+            { id: 1, title: "HTML", val: 80 }
         ]
     };
 
-    // --- توابع اصلی ---
     function up(k, v) { data[k] = v; render(); }
     function upImg(el) {
         if(el.files[0]) {
@@ -312,16 +222,11 @@
             r.readAsDataURL(el.files[0]);
         }
     }
-    function setColors() {
-        document.documentElement.style.setProperty('--primary-color', document.getElementById('col1').value);
-        document.documentElement.style.setProperty('--secondary-color', document.getElementById('col2').value);
-    }
 
-    // --- مدیریت لیست‌ها ---
     function add(type) {
         let item = type === 'skills' 
-            ? { id: Date.now(), title: "مهارت", val: 50 }
-            : { id: Date.now(), title: "عنوان", sub: "زیرعنوان", date: "تاریخ", desc: "توضیحات" };
+            ? { id: Date.now(), title: "مهارت جدید", val: 50 }
+            : { id: Date.now(), title: "شغل جدید", date: "تاریخ", desc: "توضیحات" };
         data[type].push(item);
         renderInputs(); render();
     }
@@ -334,7 +239,6 @@
         if(f) { f[k] = v; render(); }
     }
 
-    // --- رندر ورودی‌ها ---
     function renderInputs() {
         document.getElementById('in_name').value = data.name || "";
         document.getElementById('in_job').value = data.job || "";
@@ -343,183 +247,122 @@
         document.getElementById('in_email').value = data.email || "";
         document.getElementById('in_addr').value = data.addr || "";
 
-        const mkList = (t, skill) => {
-            let h = "";
-            data[t].forEach(x => {
-                if(skill) {
-                    h += `<div style="display:flex; gap:5px; margin-bottom:5px">
-                            <input value="${x.title}" oninput="upList('${t}',${x.id},'title',this.value)" placeholder="نام">
-                            <input type="number" value="${x.val}" oninput="upList('${t}',${x.id},'val',this.value)" style="width:60px">
-                            <button class="btn-danger" onclick="del('${t}',${x.id})">X</button>
-                          </div>`;
-                } else {
-                    h += `<div style="background:#f1f5f9; padding:10px; border-radius:5px; margin-bottom:8px;">
-                            <input value="${x.title}" oninput="upList('${t}',${x.id},'title',this.value)" placeholder="عنوان" style="font-weight:bold">
-                            <div style="display:flex; gap:5px">
-                                <input value="${x.sub}" oninput="upList('${t}',${x.id},'sub',this.value)">
-                                <input value="${x.date}" oninput="upList('${t}',${x.id},'date',this.value)">
-                            </div>
-                            <textarea oninput="upList('${t}',${x.id},'desc',this.value)" rows="2">${x.desc}</textarea>
-                            <button class="btn-danger" onclick="del('${t}',${x.id})">حذف آیتم</button>
-                          </div>`;
-                }
-            });
-            document.getElementById('list_' + t).innerHTML = h;
-        };
-        mkList('works', false); mkList('edus', false); mkList('skills', true);
+        let wHtml = "";
+        data.works.forEach(x => {
+            wHtml += `<div style="background:#f8fafc; padding:8px; border:1px solid #eee; margin-bottom:5px; border-radius:4px">
+                <input value="${x.title}" oninput="upList('works',${x.id},'title',this.value)" placeholder="عنوان">
+                <textarea rows="2" oninput="upList('works',${x.id},'desc',this.value)">${x.desc}</textarea>
+                <button class="btn-danger" onclick="del('works',${x.id})">حذف</button>
+            </div>`;
+        });
+        document.getElementById('list_works').innerHTML = wHtml;
+
+        let sHtml = "";
+        data.skills.forEach(x => {
+            sHtml += `<div style="display:flex; gap:5px; margin-bottom:5px">
+                <input value="${x.title}" oninput="upList('skills',${x.id},'title',this.value)">
+                <input type="number" value="${x.val}" style="width:50px" oninput="upList('skills',${x.id},'val',this.value)">
+                <button class="btn-danger" onclick="del('skills',${x.id})">x</button>
+            </div>`;
+        });
+        document.getElementById('list_skills').innerHTML = sHtml;
     }
 
-    // --- موتور رندر رزومه (صفحه‌بندی هوشمند) ---
     function render() {
         const zone = document.getElementById('renderZone');
-        zone.innerHTML = "";
-
-        const newPage = (idx) => {
-            let d = document.createElement('div');
-            d.className = 'a4-page';
-            d.innerHTML = `
-                ${idx === 0 ? `
-                <div class="header-top">
-                    <div class="shape-2"></div>
-                    <div class="shape-1"></div>
-                    <div class="header-content">
-                        <div class="header-txt">
-                            <h1>${data.name}</h1>
-                            <p>${data.job}</p>
-                        </div>
-                        ${data.photo ? `<img src="${data.photo}" class="user-photo">` : ''}
+        // ساختار ساده تک صفحه‌ای برای جلوگیری از پیچیدگی
+        let html = `
+        <div class="a4-page">
+            <div class="header-top">
+                <div class="shape-1"></div>
+                <div class="header-content">
+                    <div class="header-txt">
+                        <h1>${data.name}</h1>
+                        <p>${data.job}</p>
                     </div>
-                </div>` : '<div style="height:30px"></div>'}
-                
-                <div class="main-body">
-                    <div class="col-side" id="side-${idx}"></div>
-                    <div class="col-main" id="main-${idx}"></div>
+                    ${data.photo ? `<img src="${data.photo}" class="user-photo">` : '<div class="user-photo" style="background:#eee"></div>'}
                 </div>
-            `;
-            return d;
-        };
-
-        let pages = [], cur = 0;
-        pages.push(newPage(0));
-        zone.appendChild(pages[0]);
-
-        // پر کردن سایدبار (فرض: جا می‌شود)
-        let side = pages[0].querySelector('#side-0');
-        let cHtml = `<div class="sec-head"><i class="fas fa-address-book"></i> تماس</div>`;
-        if(data.phone) cHtml += `<div class="contact-row"><span>${data.phone}</span> <i class="fas fa-mobile"></i></div>`;
-        if(data.email) cHtml += `<div class="contact-row"><span>${data.email}</span> <i class="fas fa-envelope"></i></div>`;
-        if(data.addr) cHtml += `<div class="contact-row"><span>${data.addr}</span> <i class="fas fa-map-marker-alt"></i></div>`;
-        side.innerHTML += cHtml + '<br>';
-
-        if(data.skills.length) {
-            let sHtml = `<div class="sec-head"><i class="fas fa-lightbulb"></i> مهارت‌ها</div>`;
-            data.skills.forEach(s => {
-                sHtml += `<div class="skill-item">
-                            <div class="skill-info"><span>${s.title}</span><span>${s.val}%</span></div>
-                            <div class="skill-track"><div class="skill-bar" style="width:${s.val}%"></div></div>
-                          </div>`;
-            });
-            side.innerHTML += sHtml;
-        }
-
-        // پر کردن محتوا با صفحه بندی
-        let main = pages[0].querySelector('#main-0');
-        let blocks = [];
-        if(data.about) blocks.push({type:'txt', title:'درباره من', txt:data.about, icon:'fa-user'});
-        if(data.works.length) blocks.push({type:'list', title:'سوابق شغلی', items:data.works, icon:'fa-briefcase'});
-        if(data.edus.length) blocks.push({type:'list', title:'تحصیلات', items:data.edus, icon:'fa-graduation-cap'});
-
-        blocks.forEach(b => {
-            let t = document.createElement('div');
-            t.className = 'sec-head';
-            t.innerHTML = `<i class="fas ${b.icon}"></i> ${b.title}`;
-            main.appendChild(t);
-
-            // چک ارتفاع برای تیتر
-            let limit = cur === 0 ? 980 : 1080;
-            if(main.scrollHeight > limit) {
-                main.removeChild(t);
-                cur++;
-                pages.push(newPage(cur));
-                zone.appendChild(pages[cur]);
-                main = pages[cur].querySelector(`#main-${cur}`);
-                main.appendChild(t);
-                limit = 1080;
-            }
-
-            if(b.type === 'txt') {
-                let p = document.createElement('p');
-                p.className = 't-desc'; p.innerText = b.txt;
-                main.appendChild(p);
-            } else {
-                b.items.forEach(it => {
-                    let d = document.createElement('div');
-                    d.className = 'timeline-box';
-                    d.innerHTML = `<div class="t-title">${it.title}</div>
-                                   <div class="t-sub">${it.sub}</div>
-                                   <span class="t-date">${it.date}</span>
-                                   <div class="t-desc">${it.desc}</div>`;
-                    main.appendChild(d);
-
-                    // چک ارتفاع برای هر آیتم
-                    if(main.scrollHeight > limit) {
-                        main.removeChild(d);
-                        cur++;
-                        pages.push(newPage(cur));
-                        zone.appendChild(pages[cur]);
-                        main = pages[cur].querySelector(`#main-${cur}`);
-                        main.appendChild(d);
-                    }
-                });
-            }
-        });
+            </div>
+            <div class="main-body">
+                <div class="col-side">
+                    <div class="sec-head">تماس</div>
+                    <div style="font-size:13px; line-height:2">${data.phone}<br>${data.email}<br>${data.addr}</div>
+                    <br>
+                    <div class="sec-head">مهارت‌ها</div>
+                    ${data.skills.map(s => `
+                        <div style="margin-bottom:8px; font-size:13px">
+                            <div style="display:flex; justify-content:space-between"><span>${s.title}</span><span>${s.val}%</span></div>
+                            <div style="background:#e2e8f0; height:6px; border-radius:3px; margin-top:2px"><div style="background:var(--secondary-color); width:${s.val}%; height:100%; border-radius:3px"></div></div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="col-main">
+                    ${data.about ? `<div class="sec-head">درباره من</div><p class="t-desc">${data.about}</p>` : ''}
+                    
+                    ${data.works.length ? `<div class="sec-head">سوابق شغلی</div>` : ''}
+                    ${data.works.map(w => `
+                        <div class="timeline-box">
+                            <div class="t-title">${w.title}</div>
+                            <span class="t-date">${w.date}</span>
+                            <div class="t-desc">${w.desc}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        </div>
+        `;
+        zone.innerHTML = html;
     }
 
-    // --- زوم و ذخیره ---
-    let scale = 1;
-    function autoFit() {
-        const wrap = document.getElementById('prevWrap');
-        if(wrap.clientWidth < 800) {
-            scale = (wrap.clientWidth - 60) / 794; // 794px width of A4
-        } else {
-            scale = 1;
-        }
-        if(scale < 0.3) scale = 0.3; // جلوگیری از محو شدن کامل
+    // --- مدیریت زوم اصلاح شده ---
+    let currentScale = 1;
+    
+    function fitZoom() {
+        const wrapper = document.getElementById('prevWrap');
+        // اگر عرض Wrapper اشتباهی 0 بود (مثلا در لحظه لود اولیه)، یک مقدار پیش‌فرض در نظر بگیر
+        const availableWidth = wrapper.clientWidth || 800; 
+        
+        // عرض A4 استاندارد حدود 794 پیکسل است
+        const a4Width = 810; // با کمی حاشیه
+        
+        // محاسبه نسبت
+        let scale = (availableWidth - 60) / a4Width;
+        
+        // جلوگیری از کوچک شدن بیش از حد یا منفی شدن
+        if (scale < 0.3) scale = 0.4; 
+        if (scale > 1.2) scale = 1.2;
+        
+        currentScale = scale;
         applyZoom();
     }
-    
-    function zoom(v) { scale += v; applyZoom(); }
+
+    function zoom(change) {
+        currentScale += change;
+        if(currentScale < 0.3) currentScale = 0.3;
+        applyZoom();
+    }
+
     function applyZoom() {
-        document.getElementById('renderZone').style.transform = `scale(${scale})`;
-        document.getElementById('zoomTxt').innerText = Math.round(scale*100) + '%';
-        // تنظیم حاشیه پایین برای اسکرول شدن صحیح
-        document.getElementById('renderZone').style.marginBottom = `${(scale-1)*1000}px`; 
+        const zone = document.getElementById('renderZone');
+        zone.style.transform = `scale(${currentScale})`;
+        // تنظیم فاصله پایین برای اسکرول شدن کامل رزومه
+        zone.style.marginBottom = `${(currentScale * 1200) - 1200}px`; 
+        zone.style.marginRight = "0px"; // جلوگیری از شیفت شدن
     }
 
-    function saveJson() {
-        let a = document.createElement('a');
-        a.href = URL.createObjectURL(new Blob([JSON.stringify(data)],{type:'application/json'}));
-        a.download = 'resume.json'; a.click();
-    }
-    function loadJson(el) {
-        if(el.files[0]) {
-            let r = new FileReader();
-            r.onload = e => { data = JSON.parse(e.target.result); renderInputs(); render(); };
-            r.readAsText(el.files[0]);
-        }
-    }
-
-    // شروع برنامه
+    // شروع برنامه با تاخیر کوتاه برای اطمینان از لود شدن
     window.onload = () => {
         renderInputs();
         render();
-        setTimeout(() => {
-            autoFit();
-            document.getElementById('loading').style.opacity = '0';
-            setTimeout(()=>document.getElementById('loading').style.display='none', 500);
-        }, 500);
+        // دوبار فراخوانی برای اطمینان از لود کامل CSS
+        setTimeout(fitZoom, 100);
+        setTimeout(fitZoom, 1000);
     };
-    window.onresize = autoFit;
+    
+    // وقتی سایز پنجره عوض شد دوباره فیت کن
+    window.onresize = () => {
+        fitZoom();
+    };
 
 </script>
 </body>
